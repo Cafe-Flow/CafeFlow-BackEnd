@@ -2,7 +2,6 @@ package org.example.cafeflow.cafe.domain;
 
 import jakarta.persistence.*;
 import org.example.cafeflow.Member.domain.Member;
-import org.w3c.dom.Text;
 
 import java.time.LocalDateTime;
 
