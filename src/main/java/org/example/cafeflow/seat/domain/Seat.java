@@ -7,7 +7,7 @@ import org.example.cafeflow.cafe.domain.Cafe;
 public class Seat {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id")
     private Long id;
 
