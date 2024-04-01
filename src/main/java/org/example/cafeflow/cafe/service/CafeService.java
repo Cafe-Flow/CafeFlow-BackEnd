@@ -14,21 +14,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional()
+@Transactional
 public class CafeService {
     private final CafeRepository cafeRepository;
 
     public Long join(RequestJoinCafeDto cafeDto) {
-        LocalDateTime time = LocalDateTime.now();
-        Cafe cafe = Cafe.builder()
-                .name(cafeDto.getName())
-                .address(cafeDto.getAddress())
-                .reviewsCount(0)
-                .description(cafeDto.getDescription())
-                .region(cafeDto.getRegion())
-                .createdAt(time)
-                .updatedAt(time)
-                .build();
+        Cafe cafe = cafeDto.toEntity();
         cafeRepository.save(cafe);
 
         return cafe.getId();
@@ -41,10 +32,18 @@ public class CafeService {
                         .reviewsCount(c.getReviewsCount())
                         .build()
                 )
-        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
-    public Cafe findById(Long cafeId) {
-        return cafeRepository.findById(cafeId);
+    public List<ResponseCafeListDto> findByName(String name) {
+        List<Cafe> cafes = cafeRepository.findByName(name);
+        return cafes.stream()
+                .map(c -> ResponseCafeListDto.builder()
+                        .name(c.getName())
+                        .reviewsCount(c.getReviewsCount())
+                        .build()
+                )
+                .collect(Collectors.toList());
+
     }
 }

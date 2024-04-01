@@ -10,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor // 이건 Bulider패턴 사용때문에 존재
+@NoArgsConstructor //엔티티는 기본 생성자가 있어야 하는데 @AllArgsConstructor때문에 기본이 사라져서 추가
 @Builder
 public class Cafe {
     @Id
@@ -25,9 +26,6 @@ public class Cafe {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @OneToMany(mappedBy = "cafe")
-    private List<Review> reviews;
 
     private int reviewsCount;
 

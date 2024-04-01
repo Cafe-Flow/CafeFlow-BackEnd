@@ -6,10 +6,7 @@ import org.example.cafeflow.cafe.dto.RequestJoinCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeListDto;
 import org.example.cafeflow.cafe.service.CafeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,22 +27,21 @@ public class CafeController {
     //카페 목록 확인 (기본)
     @GetMapping("/cafe")
     public List<ResponseCafeListDto> cafeList() {
-        List<ResponseCafeListDto> cafeDto = cafeService.findAll();
-        return cafeDto;
+        return cafeService.findAll();
     }
 
 
 //    카페 목록 확인 (검색)
-//    @GetMapping("/cafe")
-//    public List<Cafe> searchCafeList(String name) {
-//
-//    }
+    @GetMapping("/cafe/{name}")
+    public List<ResponseCafeListDto> searchCafeList(@PathVariable("name") String name) {
+        return cafeService.findByName(name);
+    }
 
     //카페 목록 확인 (리뷰 순)
-    @GetMapping("/cafe/review-seq")
-    public List<ResponseCafeListDto> reviewSeqCafeList(String name) {
-        return cafeService.findAll();
-    }
+//    @GetMapping("/cafe/review-seq")
+//    public List<ResponseCafeListDto> reviewSeqCafeList(String name) {
+//        return cafeService.findAll();
+//    }
 
 
 

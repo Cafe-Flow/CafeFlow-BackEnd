@@ -17,8 +17,10 @@ public class CafeRepository {
         em.persist(cafe);
     }
 
-    public Cafe findById(Long id) {
-        return em.find(Cafe.class, id);
+    public List<Cafe> findByName(String name){
+        return em.createQuery("select c from Cafe c where c.name = :name", Cafe.class)
+                .setParameter("name", name)
+                .getResultList();
     }
 
     public List<Cafe> findAll() {

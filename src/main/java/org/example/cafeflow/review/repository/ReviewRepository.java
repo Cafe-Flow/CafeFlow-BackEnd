@@ -17,10 +17,6 @@ public class ReviewRepository {
         em.persist(review);
     }
 
-    public Review findById(Long id) {
-        return em.find(Review.class, id);
-    }
-
     public List<Review> findAll() {
         return em.createQuery("select r from Review r", Review.class)
                 .getResultList();

@@ -22,4 +22,17 @@ public class RequestJoinCafeDto {
     private String description;
 
     private String region;
+
+    public Cafe toEntity() {
+        LocalDateTime time = LocalDateTime.now();
+        return Cafe.builder()
+                .name(name)
+                .address(address)
+                .reviewsCount(0)
+                .description(description)
+                .region(region)
+                .createdAt(time)
+                .updatedAt(time)
+                .build();
+    }
 }

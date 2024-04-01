@@ -1,16 +1,22 @@
 package org.example.cafeflow.review.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.cafe.domain.Cafe;
 
 import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     @Column(name = "review_id")
     private Long id;
 
