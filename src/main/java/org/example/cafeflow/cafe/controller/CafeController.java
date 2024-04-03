@@ -3,6 +3,7 @@ package org.example.cafeflow.cafe.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.cafe.dto.RequestJoinCafeDto;
+import org.example.cafeflow.cafe.dto.ResponseCafeInfoDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeListDto;
 import org.example.cafeflow.cafe.service.CafeService;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class CafeController {
         return cafeService.findAll();
     }
 
-
-//    카페 목록 확인 (검색)
-    @GetMapping("/cafe/{name}")
-    public List<ResponseCafeListDto> searchCafeList(@PathVariable("name") String name) {
-        return cafeService.findByName(name);
-    }
+//
+////    카페 목록 확인 (검색)
+//    @GetMapping("/cafe")
+//    public List<ResponseCafeListDto> searchNameCafeList(@RequestBody Re name) {
+//        return cafeService.findByName(name);
+//    }
 
     //카페 목록 확인 (리뷰 순)
 //    @GetMapping("/cafe/review-seq")
@@ -46,4 +47,10 @@ public class CafeController {
 
 
     //카페 목록 확인 (등록 시간 순)
+
+    //카페 정보 확인
+    @GetMapping("/cafe/{cafe_id}")
+    public ResponseCafeInfoDto cafeInfo(@PathVariable("cafe_id") Long cafeId) {
+        return cafeService.findByIdForCafeInfo(cafeId);
+    }
 }

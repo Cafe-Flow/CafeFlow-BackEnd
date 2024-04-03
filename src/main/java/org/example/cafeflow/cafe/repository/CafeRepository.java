@@ -23,8 +23,13 @@ public class CafeRepository {
                 .getResultList();
     }
 
+    public Cafe findById(Long id) {
+        return em.find(Cafe.class, id);
+    }
+
     public List<Cafe> findAll() {
         return em.createQuery("select c from Cafe c", Cafe.class)
                 .getResultList();
     }
+
 }

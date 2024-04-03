@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor //builder 패턴은 전체필드 생성자가 필요함
 @Builder
 public class ResponseCafeListDto {
+    private Long id;
     private String name;
     private int reviewsCount;
 

@@ -3,6 +3,7 @@ package org.example.cafeflow.cafe.service;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.cafe.dto.RequestJoinCafeDto;
+import org.example.cafeflow.cafe.dto.ResponseCafeInfoDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeListDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class CafeService {
         List<Cafe> cafes = cafeRepository.findAll();
         return cafes.stream()
                 .map(c -> ResponseCafeListDto.builder()
+                        .id(c.getId())
                         .name(c.getName())
                         .reviewsCount(c.getReviewsCount())
                         .build()
@@ -45,5 +47,17 @@ public class CafeService {
                 )
                 .collect(Collectors.toList());
 
+    }
+
+    public ResponseCafeInfoDto findByIdForCafeInfo(Long id) {
+        Cafe cafe = cafeRepository.findById(id);
+        return ResponseCafeInfoDto.builder()
+                .name(cafe.getName())
+                .address(cafe.getAddress())
+                .reviewCount(cafe.getReviewsCount())
+                .description(cafe.getDescription())
+                .region(cafe.getRegion())
+                .createdAt(cafe.getCreatedAt())
+                .build();
     }
 }
