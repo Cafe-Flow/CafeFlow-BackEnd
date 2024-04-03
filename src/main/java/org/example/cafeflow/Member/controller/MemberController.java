@@ -37,7 +37,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No authenticated user");
         }
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        MemberDto memberDto = memberService.getMemberDetailsByUsername(username); // This method needs to be implemented in your service
+        MemberDto memberDto = memberService.getMemberDetailsByUsername(username);
         return ResponseEntity.ok(memberDto);
     }
 }
