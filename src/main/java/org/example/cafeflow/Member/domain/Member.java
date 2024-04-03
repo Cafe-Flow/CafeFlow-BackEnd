@@ -15,11 +15,14 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String username;
 
     @Column(nullable = false, length = 50, unique = true)
     private String nickname;
+
+    @Column(nullable = true)
+    private String profileImageUrl;
 
     @Column(nullable = false, unique = true)
     private String loginId;
@@ -62,4 +65,16 @@ public class Member {
     public enum Gender {
         male, female
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
