@@ -18,4 +18,5 @@ public class ResponseCafeDto {
     private String description;
     private String region;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
