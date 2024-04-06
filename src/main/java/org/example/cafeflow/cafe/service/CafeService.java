@@ -3,13 +3,11 @@ package org.example.cafeflow.cafe.service;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.cafe.dto.RequestJoinCafeDto;
-import org.example.cafeflow.cafe.dto.ResponseCafeInfoDto;
-import org.example.cafeflow.cafe.dto.ResponseCafeListDto;
+import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,33 +23,33 @@ public class CafeService {
 
         return cafe.getId();
     }
-    public List<ResponseCafeListDto> findAll() {
+    public List<ResponseCafeDto> findAll() {
         List<Cafe> cafes = cafeRepository.findAll();
         return cafes.stream()
-                .map(c -> ResponseCafeListDto.builder()
+                .map(c -> ResponseCafeDto.builder()
                         .id(c.getId())
                         .name(c.getName())
-                        .reviewsCount(c.getReviewsCount())
+                        .reviewCount(c.getReviewsCount())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseCafeListDto> findByName(String name) {
+    public List<ResponseCafeDto> findByName(String name) {
         List<Cafe> cafes = cafeRepository.findByName(name);
         return cafes.stream()
-                .map(c -> ResponseCafeListDto.builder()
+                .map(c -> ResponseCafeDto.builder()
                         .name(c.getName())
-                        .reviewsCount(c.getReviewsCount())
+                        .reviewCount(c.getReviewsCount())
                         .build()
                 )
                 .collect(Collectors.toList());
 
     }
 
-    public ResponseCafeInfoDto findByIdForCafeInfo(Long id) {
+    public ResponseCafeDto findByIdForCafeInfo(Long id) {
         Cafe cafe = cafeRepository.findById(id);
-        return ResponseCafeInfoDto.builder()
+        return ResponseCafeDto.builder()
                 .name(cafe.getName())
                 .address(cafe.getAddress())
                 .reviewCount(cafe.getReviewsCount())
