@@ -18,8 +18,8 @@ public class CafeController {
     //카페 등록
     @PostMapping("/join-cafe")
     public Long joinCafe(@RequestBody RequestCafeDto cafeDto) {
-        Long id = cafeService.join(cafeDto);
-        return id;
+        Long cafeId = cafeService.join(cafeDto);
+        return cafeId;
     }
 
     //카페 목록 확인 (기본)
@@ -38,13 +38,6 @@ public class CafeController {
     @PostMapping("/cafe/{cafe_id}")
     public void cafeUpdate(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
         cafeService.updateCafe(cafeId, cafeDto);
-    }
-
-
-    //카페 리뷰 확인
-    @GetMapping("/cafe/{cafe_id}/review")
-    public ResponseCafeDto cafeReview(@PathVariable("cafe_id") Long cafeId) {
-        return cafeService.findByIdForCafeInfo(cafeId);
     }
 
 

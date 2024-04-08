@@ -30,6 +30,7 @@ public class CafeService {
                 .map(c -> ResponseCafeDto.builder()
                         .id(c.getId())
                         .name(c.getName())
+                        .reviewsRating(c.getReviewsRating())
                         .reviewCount(c.getReviewsCount())
                         .build()
                 )

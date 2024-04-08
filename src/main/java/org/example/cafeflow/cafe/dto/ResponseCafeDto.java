@@ -15,6 +15,7 @@ public class ResponseCafeDto {
     private String name;
     private String address;
     private int reviewCount;
+    private Long reviewsRating;
     private String description;
     private String region;
     private LocalDateTime createdAt;

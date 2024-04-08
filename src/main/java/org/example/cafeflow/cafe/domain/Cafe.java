@@ -38,6 +38,9 @@ public class Cafe {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column
+    private Long reviewsRating = 0L;
+
     private int reviewsCount;
 
     private String description;
@@ -57,5 +60,13 @@ public class Cafe {
         this.description = description;
         this.region = region;
         this.updatedAt = updatedAt;
+    }
+
+    public void upReviewCount() {
+        this.reviewsCount++;
+    }
+
+    public void averageReviewRating(Long reviewsRating) {
+        this.reviewsRating = reviewsRating;
     }
 }

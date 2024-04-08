@@ -17,8 +17,13 @@ public class ReviewRepository {
         em.persist(review);
     }
 
-    public List<Review> findAll() {
-        return em.createQuery("select r from Review r", Review.class)
+    public List<Review> findByCafeId(Long cafeId) {
+        return em.createQuery("select r from Review r where r.cafe.id = :cafe_id", Review.class)
+                .setParameter("cafe_id", cafeId)
                 .getResultList();
     }
+    public Review findById(Long reviewId) {
+        return em.find(Review.class, reviewId);
+    }
+
 }
