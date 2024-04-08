@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByLoginId(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("해당 사용자 이름을 가진 사용자를 찾을 수 없습니다: " + username));
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(username)
@@ -33,3 +33,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .build();
     }
 }
+

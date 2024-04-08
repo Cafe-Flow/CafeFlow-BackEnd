@@ -1,8 +1,6 @@
 package org.example.cafeflow.Member.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.cafeflow.Member.domain.Member;
 
@@ -33,18 +31,20 @@ public class MemberRegistrationDto {
     @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
     private String password;
 
-    @NotBlank(message = "성별을 선택해주세요.")
+    @NotNull(message = "성별을 선택해주세요.")
     private Member.Gender gender;
 
-    @NotBlank(message = "사용자 나이를 입력해주세요.")
+    @NotNull(message = "사용자 나이를 입력해주세요.")
     private Integer age;
 
-    @NotBlank(message = "사용자 지역(도)을 입력해주세요.")
+    @NotNull(message = "사용자 지역(도)을 입력해주세요.")
+    @Min(1)
     private Long stateId;
 
-    @NotBlank(message = "사용자 지역을 입력해주세요.")
+    @NotNull(message = "사용자 지역을 입력해주세요.")
+    @Min(1)
     private Long cityId;
 
-    @NotBlank(message = "사용자 유형을 선택해주세요.")
+    @NotNull(message = "사용자 유형을 선택해주세요.")
     private Member.UserType userType;
 }

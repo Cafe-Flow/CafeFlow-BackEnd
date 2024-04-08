@@ -25,7 +25,7 @@ public class LocationService {
 
     public List<City> getCitiesByStateId(Long stateId) {
         if (!stateRepository.existsById(stateId)) {
-            throw new ResourceNotFoundException("State not found for this id :: " + stateId);
+            throw new ResourceNotFoundException("해당 ID를 가진 '도/시'를 찾을 수 없습니다: " + stateId);
         }
         return cityRepository.findByStateId(stateId);
     }
