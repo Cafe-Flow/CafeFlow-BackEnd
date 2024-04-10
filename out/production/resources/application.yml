@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  security:
+    user:
+      name: admin
+      password: 2527
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://svc.sel5.cloudtype.app:32319/cafe-flow
+    username: root
+    password: 2527
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+
+
+app:
+  jwt:
+    secret: "afee9ff139300837761676667d913ed901b7d6a7119053311e1b2e63fd47a48e"
+    expiration: 86400000
