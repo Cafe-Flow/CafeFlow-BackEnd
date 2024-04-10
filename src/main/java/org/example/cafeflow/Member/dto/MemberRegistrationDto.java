@@ -37,11 +37,11 @@ public class MemberRegistrationDto {
     @NotNull(message = "사용자 나이를 입력해주세요.")
     private Integer age;
 
-    @NotNull(message = "사용자 지역(도)을 입력해주세요.")
+    @NotNull(message = "도를 선택해주세요.")
     @Min(1)
     private Long stateId;
 
-    @NotNull(message = "사용자 지역을 입력해주세요.")
+    @NotNull(message = "시를 선택해주세요.")
     @Min(1)
     private Long cityId;
 
