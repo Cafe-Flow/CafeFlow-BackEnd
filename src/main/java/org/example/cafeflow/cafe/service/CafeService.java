@@ -2,9 +2,8 @@ package org.example.cafeflow.cafe.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
-import org.example.cafeflow.cafe.dto.RequestJoinCafeDto;
-import org.example.cafeflow.cafe.dto.ResponseCafeInfoDto;
-import org.example.cafeflow.cafe.dto.ResponseCafeListDto;
+import org.example.cafeflow.cafe.dto.RequestCafeDto;
+import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,45 +18,60 @@ import java.util.stream.Collectors;
 public class CafeService {
     private final CafeRepository cafeRepository;
 
-    public Long join(RequestJoinCafeDto cafeDto) {
+    public Long join(RequestCafeDto cafeDto) {
         Cafe cafe = cafeDto.toEntity();
         cafeRepository.save(cafe);
 
         return cafe.getId();
     }
-    public List<ResponseCafeListDto> findAll() {
+    public List<ResponseCafeDto> findAll() {
         List<Cafe> cafes = cafeRepository.findAll();
         return cafes.stream()
-                .map(c -> ResponseCafeListDto.builder()
+                .map(c -> ResponseCafeDto.builder()
                         .id(c.getId())
                         .name(c.getName())
-                        .reviewsCount(c.getReviewsCount())
+                        .reviewsRating(c.getReviewsRating())
+                        .reviewCount(c.getReviewsCount())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
 
-    public List<ResponseCafeListDto> findByName(String name) {
+    public void updateCafe(Long id, RequestCafeDto cafeDto) {
+        Cafe cafe = cafeRepository.findById(id);
+        LocalDateTime updatedAt = LocalDateTime.now();
+        cafe.updateCafe(cafeDto.getName(),
+                        cafeDto.getAddress(),
+                        cafeDto.getDescription(),
+                        cafeDto.getRegion(),
+                        updatedAt
+        );
+    }
+
+    public List<ResponseCafeDto> findByName(String name) {
         List<Cafe> cafes = cafeRepository.findByName(name);
         return cafes.stream()
-                .map(c -> ResponseCafeListDto.builder()
+                .map(c -> ResponseCafeDto.builder()
+                        .id(c.getId())
                         .name(c.getName())
-                        .reviewsCount(c.getReviewsCount())
+                        .reviewCount(c.getReviewsCount())
                         .build()
                 )
                 .collect(Collectors.toList());
-
     }
 
-    public ResponseCafeInfoDto findByIdForCafeInfo(Long id) {
+    public ResponseCafeDto findByIdForCafeInfo(Long id) {
         Cafe cafe = cafeRepository.findById(id);
-        return ResponseCafeInfoDto.builder()
+        return ResponseCafeDto.builder()
+                .id(cafe.getId())
                 .name(cafe.getName())
                 .address(cafe.getAddress())
                 .reviewCount(cafe.getReviewsCount())
+                .reviewsRating(cafe.getReviewsRating())
                 .description(cafe.getDescription())
                 .region(cafe.getRegion())
                 .createdAt(cafe.getCreatedAt())
+                .updatedAt(cafe.getUpdatedAt())
                 .build();
     }
 }

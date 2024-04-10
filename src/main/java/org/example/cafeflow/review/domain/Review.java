@@ -1,22 +1,30 @@
 package org.example.cafeflow.review.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.cafe.domain.Cafe;
 
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Review {
 
+    @Builder
+    public Review(Long id, Cafe cafe, Member member, Long rating, String comment, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.cafe = cafe;
+        this.member = member;
+        this.rating = rating;
+        this.comment = comment;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
 
@@ -38,4 +46,8 @@ public class Review {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void registerdReviewToCafe(Cafe cafe) {
+        this.cafe = cafe;
+    }
 }
