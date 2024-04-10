@@ -16,14 +16,14 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     //카페 리뷰 등록
-    @PostMapping("/cafe/{cafe_id}/review")
+    @PostMapping("/api/cafe/{cafe_id}/review")
     public Long postReview(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCreateReviewDto reviewDto) {
         Long reviewId = reviewService.createReview(cafeId, reviewDto);
         return reviewId;
     }
 
     //카페 리뷰 확인
-    @GetMapping("/cafe/{cafe_id}/review")
+    @GetMapping("/api/cafe/{cafe_id}/review")
     public List<ResponseReviewDto> cafeReview(@PathVariable("cafe_id") Long cafeId) {
         return reviewService.findByCafeId(cafeId);
     }
