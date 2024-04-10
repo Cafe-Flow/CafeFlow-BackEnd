@@ -1,13 +1,12 @@
 package org.example.cafeflow.cafe.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.example.cafeflow.cafe.domain.Cafe;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class RequestCafeDto {

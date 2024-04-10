@@ -1,14 +1,13 @@
 package org.example.cafeflow.review.dto;
 
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.example.cafeflow.review.domain.Review;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestCreateReviewDto {
 
     @Builder

@@ -35,27 +35,14 @@ public class CafeController {
     }
 
     //카페 정보 수정
-    @PostMapping("/api/cafe/{cafe_id}")
-    public void cafeUpdate(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
+    @PutMapping("/api/cafe/{cafe_id}")
+    public void updateCafe(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
         cafeService.updateCafe(cafeId, cafeDto);
     }
 
-
-//    카페 목록 확인 (검색)
-//    @GetMapping("/cafe")
-//    public List<ResponseCafeDto> searchNameCafeList(@RequestBody String name) {
-//        return cafeService.findByName(name);
-//    }
-
-//    카페 목록 확인 (리뷰 순)
-//    @GetMapping("/cafe/review-seq")
-//    public List<ResponseCafeDto> reviewSeqCafeList(String name) {
-//        return cafeService.findAll();
-//    }
-
-
-
-    //카페 목록 확인 (등록 시간 순)
-
-
+    //카페 정보 삭제
+    @DeleteMapping("/api/cafe/{cafe_id}")
+    public void deleteCafe(@PathVariable("cafe_id") Long cafeId) {
+        cafeService.deleteCafe(cafeId);
+    }
 }

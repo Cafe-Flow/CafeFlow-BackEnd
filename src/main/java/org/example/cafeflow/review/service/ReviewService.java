@@ -41,7 +41,7 @@ public class ReviewService {
         double averageRating = (double) totalRating / reviews.size(); // 평균 평점을 계산합니다.
         double roundedAverageRating = Math.round(averageRating * 10.0) / 10.0; // 한 자리 소수점으로 반올림합니다.
 
-// Long으로 형 변환하여 전달합니다.
+        // Long으로 형 변환하여 전달합니다.
         Long roundedAverageRatingLong = Math.round(roundedAverageRating);
 
         cafe.averageReviewRating(roundedAverageRatingLong); // 카페의 평균 평점을 설정합니다.

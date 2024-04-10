@@ -32,4 +32,10 @@ public class CafeRepository {
                 .getResultList();
     }
 
+    public void delete(Long id) {
+        Cafe cafe = findById(id);
+        if(cafe != null)
+            em.remove(cafe);
+    }
+
 }
