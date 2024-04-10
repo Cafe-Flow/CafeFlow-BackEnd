@@ -67,7 +67,6 @@ public class CafeService {
                 .name(cafe.getName())
                 .address(cafe.getAddress())
                 .reviewCount(cafe.getReviewsCount())
-                .reviewsRating(cafe.getReviewsRating())
                 .description(cafe.getDescription())
                 .region(cafe.getRegion())
                 .createdAt(cafe.getCreatedAt())

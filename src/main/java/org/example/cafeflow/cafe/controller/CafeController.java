@@ -16,26 +16,26 @@ public class CafeController {
 
 
     //카페 등록
-    @PostMapping("/api/register-cafe")
+    @PostMapping("/join-cafe")
     public Long joinCafe(@RequestBody RequestCafeDto cafeDto) {
         Long cafeId = cafeService.join(cafeDto);
         return cafeId;
     }
 
     //카페 목록 확인 (기본)
-    @GetMapping("/api/cafe")
+    @GetMapping("/cafe")
     public List<ResponseCafeDto> cafeList() {
         return cafeService.findAll();
     }
 
     //카페 정보 확인
-    @GetMapping("/api/cafe/{cafe_id}")
+    @GetMapping("/cafe/{cafe_id}")
     public ResponseCafeDto cafeInfo(@PathVariable("cafe_id") Long cafeId) {
         return cafeService.findByIdForCafeInfo(cafeId);
     }
 
     //카페 정보 수정
-    @PostMapping("/api/cafe/{cafe_id}")
+    @PostMapping("/cafe/{cafe_id}")
     public void cafeUpdate(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
         cafeService.updateCafe(cafeId, cafeDto);
     }
