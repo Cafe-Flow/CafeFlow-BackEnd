@@ -28,19 +28,29 @@ public class ReviewService {
         Cafe cafe = cafeRepository.findById(cafeId); //생성한 리뷰 카페랑 묶기
         cafe.upReviewCount();//리뷰 수 증가
 
-        Long reviewRating = 0L;
+        Long totalRating = 0L; // 총 평점
         review.registerdReviewToCafe(cafe);
         reviewRepository.save(review);
 
         List<Review> reviews = reviewRepository.findByCafeId(cafeId);
 
         for (Review r : reviews) {
-            reviewRating += r.getRating();
+            totalRating += r.getRating();
         }
 
-        reviewRating = reviewRating  / reviews.size();
-        cafe.averageReviewRating(reviewRating);
+        double averageRating = (double) totalRating / reviews.size(); // 평균 평점을 계산합니다.
+        double roundedAverageRating = Math.round(averageRating * 10.0) / 10.0; // 한 자리 소수점으로 반올림합니다.
+
+// Long으로 형 변환하여 전달합니다.
+        Long roundedAverageRatingLong = Math.round(roundedAverageRating);
+
+        cafe.averageReviewRating(roundedAverageRatingLong); // 카페의 평균 평점을 설정합니다.
+        Long a = 0L;
+        double rating = 7;
+
+        System.out.println();
         return review.getId();
+
     }
 
     public List<ResponseReviewDto> findByCafeId(Long cafeId) {
