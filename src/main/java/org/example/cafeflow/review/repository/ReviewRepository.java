@@ -17,6 +17,24 @@ public class ReviewRepository {
         em.persist(review);
     }
 
+    public List<Review> findAllByHighestRating(Long cafeId, String sortBy) {
+        return em.createQuery("select r from Review r where r.cafe.id = :cafe_id order by r.rating desc", Review.class)
+                .setParameter("cafe_id", cafeId)
+                .getResultList();
+    }
+
+    public List<Review> findAllByLowestRating(Long cafeId, String sortBy) {
+        return em.createQuery("select r from Review r where r.cafe.id = :cafe_id order by r.rating", Review.class)
+                .setParameter("cafe_id", cafeId)
+                .getResultList();
+    }
+
+    public List<Review> findAllByLatest(Long cafeId, String sortBy) {
+        return em.createQuery("select r from Review r where r.cafe.id = :cafe_id order by r.createdAt desc", Review.class)
+                .setParameter("cafe_id", cafeId)
+                .getResultList();
+    }
+
     public List<Review> findByCafeId(Long cafeId) {
         return em.createQuery("select r from Review r where r.cafe.id = :cafe_id", Review.class)
                 .setParameter("cafe_id", cafeId)

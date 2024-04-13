@@ -1,5 +1,6 @@
 package org.example.cafeflow.review.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.review.dto.RequestCreateReviewDto;
 import org.example.cafeflow.review.dto.ResponseReviewDto;
@@ -17,15 +18,15 @@ public class ReviewController {
 
     //카페 리뷰 등록
     @PostMapping("/api/cafe/{cafe_id}/review")
-    public Long postReview(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCreateReviewDto reviewDto) {
+    public Long postReview(@PathVariable("cafe_id") Long cafeId, @Valid @RequestBody RequestCreateReviewDto reviewDto) {
         Long reviewId = reviewService.createReview(cafeId, reviewDto);
         return reviewId;
     }
 
     //카페 리뷰 확인
     @GetMapping("/api/cafe/{cafe_id}/review")
-    public List<ResponseReviewDto> cafeReview(@PathVariable("cafe_id") Long cafeId) {
-        return reviewService.findByCafeId(cafeId);
+    public List<ResponseReviewDto> cafeReview(@PathVariable("cafe_id") Long cafeId, @RequestParam("sort-by") String sortBy) {
+        return reviewService.findAllBySort(cafeId, sortBy);
     }
 
 //    @PostMapping("/cafe/{cafe_id}/review/{review_id}")

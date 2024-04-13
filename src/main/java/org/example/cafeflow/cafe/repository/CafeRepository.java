@@ -32,10 +32,29 @@ public class CafeRepository {
                 .getResultList();
     }
 
+    //등록 순 조회
+    public List<Cafe> findAllByCreatedAt() {
+        return em.createQuery("select c from Cafe c order by c.createdAt", Cafe.class)
+                .getResultList();
+    }
+
+    //리뷰 갯수순 조회
+    public List<Cafe> findAllByReviewsCount() {
+        return em.createQuery("select c from Cafe c order by c.reviewsCount desc", Cafe.class)
+                .getResultList();
+    }
+
+    //리뷰 평점순 조회
+    public List<Cafe> findAllByReviewsRating() {
+        return em.createQuery("select c from Cafe c order by c.reviewsRating desc", Cafe.class)
+                .getResultList();
+    }
+
     public void delete(Long id) {
         Cafe cafe = findById(id);
         if(cafe != null)
             em.remove(cafe);
     }
+
 
 }

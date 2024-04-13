@@ -44,7 +44,7 @@ public class Cafe {
     List<Review> reviews = new ArrayList<>();
 
     @Column
-    private Long reviewsRating = 0L;
+    private double reviewsRating = 0;
 
     private int reviewsCount;
 
@@ -71,7 +71,7 @@ public class Cafe {
         this.reviewsCount++;
     }
 
-    public void averageReviewRating(Long reviewsRating) {
+    public void averageReviewRating(double reviewsRating) {
         this.reviewsRating = reviewsRating;
     }
 

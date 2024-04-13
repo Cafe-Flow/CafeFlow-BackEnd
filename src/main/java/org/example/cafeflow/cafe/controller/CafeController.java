@@ -1,5 +1,6 @@
 package org.example.cafeflow.cafe.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
@@ -17,15 +18,15 @@ public class CafeController {
 
     //카페 등록
     @PostMapping("/api/register-cafe")
-    public Long joinCafe(@RequestBody RequestCafeDto cafeDto) {
+    public Long joinCafe(@Valid @RequestBody RequestCafeDto cafeDto) {
         Long cafeId = cafeService.join(cafeDto);
         return cafeId;
     }
 
-    //카페 목록 확인 (기본)
+    //카페 목록 확인
     @GetMapping("/api/cafe")
-    public List<ResponseCafeDto> cafeList() {
-        return cafeService.findAll();
+    public List<ResponseCafeDto> cafeList(@RequestParam("sort-by") String sortBy) {
+        return cafeService.findAllBySort(sortBy);
     }
 
     //카페 정보 확인

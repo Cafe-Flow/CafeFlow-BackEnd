@@ -26,8 +26,23 @@ public class CafeService {
     }
 
     //카페 목록 전부 보기
-    public List<ResponseCafeDto> findAll() {
-        List<Cafe> cafes = cafeRepository.findAll();
+    public List<ResponseCafeDto> findAllBySort(String sortBy) {
+        List<Cafe> cafes;
+        switch (sortBy) {
+            case "created-at":
+                cafes = cafeRepository.findAllByCreatedAt();
+                break;
+            case "reviews-count":
+                cafes = cafeRepository.findAllByReviewsCount();
+                break;
+            case "reviews-rating":
+                cafes = cafeRepository.findAllByReviewsRating();
+                break;
+            default:
+                cafes = cafeRepository.findAll();
+                break;
+        }
+
         return cafes.stream()
                 .map(c -> ResponseCafeDto.builder()
                         .id(c.getId())
