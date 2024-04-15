@@ -15,35 +15,27 @@ import org.example.cafeflow.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class MemberService {
-
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private StateRepository stateRepository;
-
     @Autowired
     private CityRepository cityRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public TokenDto registerMember(MemberRegistrationDto registrationDto) {
+    public MemberDto registerMember(MemberRegistrationDto registrationDto) {
         memberRepository.findByLoginId(registrationDto.getLoginId()).ifPresent(m -> {
             throw new DuplicateLoginIdException("이미 등록된 ID 입니다.");
         });
-
         memberRepository.findByEmail(registrationDto.getEmail()).ifPresent(m -> {
             throw new DuplicateEmailException("이미 등록된 이메일입니다.");
         });
-
         memberRepository.findByNickname(registrationDto.getNickname()).ifPresent(m -> {
             throw new DuplicateNicknameException("이미 등록된 닉네임입니다.");
         });
@@ -53,8 +45,6 @@ public class MemberService {
         City city = cityRepository.findById(registrationDto.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID를 가진 '시/군,구'가 없습니다: " + registrationDto.getCityId()));
 
-
-        Member.UserType userType = registrationDto.getUserType() != null ? registrationDto.getUserType() : Member.UserType.USER;
         Member member = Member.builder()
                 .username(registrationDto.getUsername())
                 .nickname(registrationDto.getNickname())
@@ -63,15 +53,27 @@ public class MemberService {
                 .email(registrationDto.getEmail())
                 .gender(registrationDto.getGender())
                 .age(registrationDto.getAge())
-                .userType(userType)
+                .userType(registrationDto.getUserType())
                 .state(state)
                 .city(city)
                 .build();
 
         memberRepository.save(member);
-        String token = jwtTokenProvider.createToken(member.getLoginId(), member.getUserType());
+        return convertToMemberDto(member);
+    }
 
-        return new TokenDto(token);
+    private MemberDto convertToMemberDto(Member member) {
+        return new MemberDto(
+                member.getId(),
+                member.getUsername(),
+                member.getNickname(),
+                member.getEmail(),
+                member.getGender(),
+                member.getAge(),
+                member.getCity().getId(),
+                member.getState().getId(),
+                member.getUserType()
+        );
     }
 
     public TokenDto loginMember(MemberLoginDto loginDto) {
@@ -96,9 +98,49 @@ public class MemberService {
                         member.getGender(),
                         member.getAge(),
                         member.getCity() != null ? member.getCity().getId() : null,
-                        member.getState() != null ? member.getState().getId() : null
+                        member.getState() != null ? member.getState().getId() : null,
+                        member.getUserType()
                 ))
                 .orElse(null);
     }
+    public MemberDto updateMember(Long id, MemberRegistrationDto registrationDto) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원을 찾을 수 없습니다: " + id));
 
+        member.setUsername(registrationDto.getUsername());
+        member.setNickname(registrationDto.getNickname());
+        member.setEmail(registrationDto.getEmail());
+        member.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
+        member.setGender(registrationDto.getGender());
+        member.setAge(registrationDto.getAge());
+        member.setUserType(registrationDto.getUserType());
+
+        City city = cityRepository.findById(registrationDto.getCityId())
+                .orElseThrow(() -> new ResourceNotFoundException("시 정보를 찾을 수 없습니다: " + registrationDto.getCityId()));
+        member.setCity(city);
+
+        State state = stateRepository.findById(registrationDto.getStateId())
+                .orElseThrow(() -> new ResourceNotFoundException("도 정보를 찾을 수 없습니다: " + registrationDto.getStateId()));
+        member.setState(state);
+
+        memberRepository.save(member);
+
+        return new MemberDto(
+                member.getId(),
+                member.getUsername(),
+                member.getNickname(),
+                member.getEmail(),
+                member.getGender(),
+                member.getAge(),
+                member.getCity().getId(),
+                member.getState().getId(),
+                member.getUserType()
+        );
+    }
+
+    public void deleteMember(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원을 찾을 수 없습니다: " + id));
+        memberRepository.delete(member);
+    }
 }

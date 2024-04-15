@@ -40,4 +40,15 @@ public class MemberController {
         MemberDto memberDto = memberService.getMemberDetailsByUsername(username);
         return ResponseEntity.ok(memberDto);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMember(@PathVariable Long id, @Valid @RequestBody MemberRegistrationDto registrationDto) {
+        return ResponseEntity.ok(memberService.updateMember(id, registrationDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
+        memberService.deleteMember(id);
+        return ResponseEntity.noContent().build();
+    }
 }
