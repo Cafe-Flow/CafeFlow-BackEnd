@@ -21,13 +21,23 @@ public class Post {
     @JoinColumn(name = "author_id")
     private CommunityMember author;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
-
     private String content;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
+
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    public Post(CommunityMember author, String content, LocalDateTime createdAt, Board board, String imageUrl) {
+        this.author = author;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.board = board;
+        this.imageUrl = imageUrl;
+    }
 }

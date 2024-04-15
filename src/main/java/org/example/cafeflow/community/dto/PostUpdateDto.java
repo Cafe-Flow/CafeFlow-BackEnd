@@ -1,6 +1,5 @@
 package org.example.cafeflow.community.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FriendRequestDto {
-    private Long memberId;
-    private Long friendId;
+public class PostUpdateDto {
+    private String content;
 }
