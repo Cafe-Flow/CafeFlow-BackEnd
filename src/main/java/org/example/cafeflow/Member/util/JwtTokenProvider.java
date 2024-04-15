@@ -13,9 +13,9 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey;
-    private long validityInMilliseconds;
-    private Key key;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+    private final Key key;
 
     public JwtTokenProvider(@Value("${app.jwt.secret}") String secretKey,
                             @Value("${app.jwt.expiration}") long validityInMilliseconds) {
@@ -30,13 +30,12 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(username)
-                .claim("auth", userType.name()) // 'claim' 메서드를 사용하여 직접 클레임 추가
+                .claim("auth", userType.name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-
 
     public String getUsername(String token) {
         return Jwts.parserBuilder()
@@ -58,7 +57,6 @@ public class JwtTokenProvider {
         return UserType.valueOf(auth);
     }
 
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -66,16 +64,8 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Token expired");
-        } catch (UnsupportedJwtException e) {
-            throw new RuntimeException("Unsupported JWT token");
-        } catch (MalformedJwtException e) {
-            throw new RuntimeException("Malformed JWT token");
-        } catch (SignatureException e) {
-            throw new RuntimeException("Invalid JWT signature");
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid JWT token");
+        } catch (JwtException e) {
+            throw new JwtValidationException("Token validation error: " + e.getMessage(), e);
         }
     }
 
@@ -85,5 +75,11 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
         return null;
+    }
+}
+
+class JwtValidationException extends RuntimeException {
+    public JwtValidationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

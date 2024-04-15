@@ -33,25 +33,26 @@ public class GlobalExceptionHandler {
 
         ErrorDetails errorDetails = new ErrorDetails(
                 HttpStatus.BAD_REQUEST.value(),
-                "검증에 실패했습니다",
-                String.join(", ", errors));
+                "검증 실패: " + String.join(", ", errors),
+                request.getDescription(false));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorDetails> handleInvalidPasswordException(InvalidPasswordException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
                 request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDetails> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(
                 HttpStatus.CONFLICT.value(),
-                "데이터 무결성 위반: 중복된 데이터가 존재합니다.",
+                "데이터 무결성 위반: " + ex.getMostSpecificCause().getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }

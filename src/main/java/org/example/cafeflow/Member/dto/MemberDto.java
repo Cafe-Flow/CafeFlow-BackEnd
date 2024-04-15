@@ -17,4 +17,5 @@
         private Integer age;
         private Long cityId;
         private Long stateId;
+        private Member.UserType userType;
     }

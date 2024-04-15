@@ -2,15 +2,14 @@ package org.example.cafeflow.Member.controller;
 
 import org.example.cafeflow.Member.domain.City;
 import org.example.cafeflow.Member.domain.State;
+import org.example.cafeflow.Member.dto.CityDto;
 import org.example.cafeflow.Member.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/locations")
@@ -26,8 +25,12 @@ public class LocationController {
     }
 
     @GetMapping("/states/{stateId}/cities")
-    public ResponseEntity<List<City>> getCitiesByStateId(@PathVariable Long stateId) {
+    public ResponseEntity<List<CityDto>> getCitiesByStateId(@PathVariable("stateId") Long stateId) {
         List<City> cities = locationService.getCitiesByStateId(stateId);
-        return ResponseEntity.ok(cities);
+        List<CityDto> cityDtos = cities.stream()
+                .map(city -> new CityDto(city.getId(), city.getName(), city.getState().getId()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(cityDtos);
     }
+
 }
