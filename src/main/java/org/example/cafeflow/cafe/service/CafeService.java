@@ -24,8 +24,25 @@ public class CafeService {
 
         return cafe.getId();
     }
-    public List<ResponseCafeDto> findAll() {
-        List<Cafe> cafes = cafeRepository.findAll();
+
+    //카페 목록 전부 보기
+    public List<ResponseCafeDto> findAllBySort(String sortBy) {
+        List<Cafe> cafes;
+        switch (sortBy) {
+            case "created-at":
+                cafes = cafeRepository.findAllByCreatedAt();
+                break;
+            case "reviews-count":
+                cafes = cafeRepository.findAllByReviewsCount();
+                break;
+            case "reviews-rating":
+                cafes = cafeRepository.findAllByReviewsRating();
+                break;
+            default:
+                cafes = cafeRepository.findAll();
+                break;
+        }
+
         return cafes.stream()
                 .map(c -> ResponseCafeDto.builder()
                         .id(c.getId())
@@ -37,6 +54,8 @@ public class CafeService {
                 .collect(Collectors.toList());
     }
 
+
+    //카페 정보 수정하기
     public void updateCafe(Long id, RequestCafeDto cafeDto) {
         Cafe cafe = cafeRepository.findById(id);
         LocalDateTime updatedAt = LocalDateTime.now();
@@ -48,6 +67,13 @@ public class CafeService {
         );
     }
 
+    //카페 정보 삭제하기
+    public void deleteCafe(Long id) {
+        cafeRepository.delete(id);
+    }
+
+
+    //카페 이름 검색
     public List<ResponseCafeDto> findByName(String name) {
         List<Cafe> cafes = cafeRepository.findByName(name);
         return cafes.stream()
@@ -60,6 +86,8 @@ public class CafeService {
                 .collect(Collectors.toList());
     }
 
+
+    //카페 정보 확인
     public ResponseCafeDto findByIdForCafeInfo(Long id) {
         Cafe cafe = cafeRepository.findById(id);
         return ResponseCafeDto.builder()

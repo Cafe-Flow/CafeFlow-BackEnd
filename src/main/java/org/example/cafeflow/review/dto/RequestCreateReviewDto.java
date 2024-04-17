@@ -1,14 +1,16 @@
 package org.example.cafeflow.review.dto;
 
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.example.cafeflow.review.domain.Review;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestCreateReviewDto {
 
     @Builder
@@ -16,6 +18,8 @@ public class RequestCreateReviewDto {
         this.rating = rating;
         this.comment = comment;
     }
+
+    @Min(value = 1, message = "별점을 매겨주세요!")
     private Long rating;
 
     private String comment;

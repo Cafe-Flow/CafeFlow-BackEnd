@@ -40,21 +40,28 @@ public class ReviewService {
 
         double averageRating = (double) totalRating / reviews.size(); // 평균 평점을 계산합니다.
         double roundedAverageRating = Math.round(averageRating * 10.0) / 10.0; // 한 자리 소수점으로 반올림합니다.
+        cafe.averageReviewRating(roundedAverageRating); // 카페의 평균 평점을 설정합니다.
 
-// Long으로 형 변환하여 전달합니다.
-        Long roundedAverageRatingLong = Math.round(roundedAverageRating);
-
-        cafe.averageReviewRating(roundedAverageRatingLong); // 카페의 평균 평점을 설정합니다.
-        Long a = 0L;
-        double rating = 7;
-
-        System.out.println();
         return review.getId();
 
     }
 
-    public List<ResponseReviewDto> findByCafeId(Long cafeId) {
-        List<Review> reviews = reviewRepository.findByCafeId(cafeId);
+    public List<ResponseReviewDto> findAllBySort(Long cafeId, String sortBy) {
+        List<Review> reviews;
+        switch (sortBy) {
+            case "highest-rating":
+                reviews = reviewRepository.findAllByHighestRating(cafeId, sortBy);
+                break;
+            case "lowest-rating":
+                reviews = reviewRepository.findAllByLowestRating(cafeId, sortBy);
+                break;
+            case "latest":
+                reviews = reviewRepository.findAllByLatest(cafeId, sortBy);
+                break;
+            default:
+                reviews = reviewRepository.findByCafeId(cafeId);
+                break;
+        }
         return reviews.stream()
                 .map(r -> ResponseReviewDto.builder()
                         .id(r.getId())
