@@ -13,13 +13,11 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey;
     private final long validityInMilliseconds;
     private final Key key;
 
     public JwtTokenProvider(@Value("${app.jwt.secret}") String secretKey,
                             @Value("${app.jwt.expiration}") long validityInMilliseconds) {
-        this.secretKey = secretKey;
         this.validityInMilliseconds = validityInMilliseconds;
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }

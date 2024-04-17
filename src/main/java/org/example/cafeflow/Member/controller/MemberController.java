@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/auth")
 public class MemberController {
@@ -21,8 +23,9 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerMember(@Valid @RequestBody MemberRegistrationDto registrationDto) {
-        return ResponseEntity.ok(memberService.registerMember(registrationDto));
+    public ResponseEntity<MemberDto> registerMember(@Valid @RequestBody MemberRegistrationDto registrationDto) {
+        MemberDto member = memberService.registerMember(registrationDto);
+        return ResponseEntity.ok(member);
     }
 
     @PostMapping("/login")
@@ -31,24 +34,49 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser() {
+    public ResponseEntity<MemberDto> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증된 사용자가 아닙니다.");
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        MemberDto memberDto = memberService.getMemberDetailsByUsername(username);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        MemberDto memberDto = memberService.getMemberDetailsByUsername(userDetails.getUsername());
         return ResponseEntity.ok(memberDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateMember(@PathVariable Long id, @Valid @RequestBody MemberRegistrationDto registrationDto) {
-        return ResponseEntity.ok(memberService.updateMember(id, registrationDto));
+    public ResponseEntity<MemberDto> updateMember(@PathVariable("id") Long id, @Valid @RequestBody MemberRegistrationDto registrationDto, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        MemberDto updatedMember = memberService.updateMember(id, registrationDto, userDetails.getUsername());
+        return ResponseEntity.ok(updatedMember);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
-        memberService.deleteMember(id);
+    public ResponseEntity<Void> deleteMember(@PathVariable("id") Long id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        memberService.deleteMember(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberDto>> getAllMembers() {
+        List<MemberDto> members = memberService.getAllMembers();
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/members/search/by-nickname")
+    public ResponseEntity<List<MemberDto>> getMembersByNickname(@RequestParam("nickname") String nickname) {
+        List<MemberDto> members = memberService.getMembersByNickname(nickname);
+        return ResponseEntity.ok(members);
+    }
+    @GetMapping("/check-admin")
+    public ResponseEntity<String> checkIfUserIsAdmin(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "").trim();
+        boolean isAdmin = memberService.checkIfUserIsAdmin(token);
+        if (isAdmin) {
+            return ResponseEntity.ok("관리자입니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("관리자만 접근 가능합니다.");
+        }
     }
 }
