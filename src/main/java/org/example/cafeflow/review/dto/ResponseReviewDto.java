@@ -1,12 +1,11 @@
 package org.example.cafeflow.review.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseReviewDto {
 
     @Builder
