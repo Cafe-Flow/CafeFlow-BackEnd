@@ -32,7 +32,7 @@ public class MemberService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public MemberDto registerMember(MemberRegistrationDto registrationDto) {
+    public TokenDto registerMember(MemberRegistrationDto registrationDto) {
         validateRegistration(registrationDto);
 
         State state = getState(registrationDto.getStateId());
@@ -40,7 +40,8 @@ public class MemberService {
 
         Member member = buildMember(registrationDto, state, city);
         memberRepository.save(member);
-        return convertToMemberDto(member);
+        String token = createToken(member);
+        return new TokenDto(token);
     }
 
     private void validateRegistration(MemberRegistrationDto dto) {
