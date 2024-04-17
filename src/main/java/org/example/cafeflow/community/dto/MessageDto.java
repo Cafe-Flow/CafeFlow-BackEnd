@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 public class MessageDto {
     private String from;
-    // getter 메서드 추가
+
     @Getter
     private String to;
     private String text;

@@ -14,4 +14,5 @@ public class PostCreationDto {
     private Long boardId;
     private String content;
     private String imageUrl;
+    private String region;
 }

@@ -92,6 +92,7 @@ public class GlobalExceptionHandler {
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
+
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ErrorDetails> handleUnauthorizedAccessException(UnauthorizedAccessException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(
