@@ -48,6 +48,7 @@ public class Review {
     private LocalDateTime updatedAt;
 
     public void registerdReviewToCafe(Cafe cafe) {
+        cafe.addReview(this);
         this.cafe = cafe;
     }
 }

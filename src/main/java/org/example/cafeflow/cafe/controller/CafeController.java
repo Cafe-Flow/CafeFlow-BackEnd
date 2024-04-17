@@ -1,5 +1,6 @@
 package org.example.cafeflow.cafe.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
@@ -17,15 +18,15 @@ public class CafeController {
 
     //카페 등록
     @PostMapping("/api/register-cafe")
-    public Long joinCafe(@RequestBody RequestCafeDto cafeDto) {
+    public Long joinCafe(@Valid @RequestBody RequestCafeDto cafeDto) {
         Long cafeId = cafeService.join(cafeDto);
         return cafeId;
     }
 
-    //카페 목록 확인 (기본)
+    //카페 목록 확인
     @GetMapping("/api/cafe")
-    public List<ResponseCafeDto> cafeList() {
-        return cafeService.findAll();
+    public List<ResponseCafeDto> cafeList(@RequestParam("sort-by") String sortBy) {
+        return cafeService.findAllBySort(sortBy);
     }
 
     //카페 정보 확인
@@ -35,27 +36,14 @@ public class CafeController {
     }
 
     //카페 정보 수정
-    @PostMapping("/api/cafe/{cafe_id}")
-    public void cafeUpdate(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
+    @PutMapping("/api/cafe/{cafe_id}")
+    public void updateCafe(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
         cafeService.updateCafe(cafeId, cafeDto);
     }
 
-
-//    카페 목록 확인 (검색)
-//    @GetMapping("/cafe")
-//    public List<ResponseCafeDto> searchNameCafeList(@RequestBody String name) {
-//        return cafeService.findByName(name);
-//    }
-
-//    카페 목록 확인 (리뷰 순)
-//    @GetMapping("/cafe/review-seq")
-//    public List<ResponseCafeDto> reviewSeqCafeList(String name) {
-//        return cafeService.findAll();
-//    }
-
-
-
-    //카페 목록 확인 (등록 시간 순)
-
-
+    //카페 정보 삭제
+    @DeleteMapping("/api/cafe/{cafe_id}")
+    public void deleteCafe(@PathVariable("cafe_id") Long cafeId) {
+        cafeService.deleteCafe(cafeId);
+    }
 }
