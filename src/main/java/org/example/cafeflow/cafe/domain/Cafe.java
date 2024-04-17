@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) //엔티티는 기본 생성자가 있어야 하는데 @AllArgsConstructor때문에 기본이 사라져서 추가
 public class Cafe {
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, int reviewsCount, String description, String region, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, int reviewsCount, String description, CafeCoordinates cafeCoordinates, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -22,7 +22,7 @@ public class Cafe {
         this.reviews = reviews;
         this.reviewsCount = reviewsCount;
         this.description = description;
-        this.region = region;
+        this.cafeCoordinates = cafeCoordinates;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -49,8 +49,8 @@ public class Cafe {
     private int reviewsCount;
 
     private String description;
-
-    private String region;
+    @Embedded
+    private CafeCoordinates cafeCoordinates;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -59,11 +59,10 @@ public class Cafe {
     private LocalDateTime updatedAt;
 
     //카페 정보 수정
-    public void updateCafe(String name, String address, String description, String region, LocalDateTime updatedAt) {
+    public void updateCafe(String name, String address, String description, LocalDateTime updatedAt) {
         this.name = name;
         this.address = address;
         this.description = description;
-        this.region = region;
         this.updatedAt = updatedAt;
     }
 
