@@ -23,7 +23,7 @@ public class CafeController {
     private final CafeService cafeService;
 
 
-    //카페 등록(직접 작성 또는 네이버 연동에서 이쪽으로)
+    //카페 등록(직접 작성 + 네이버 연동한거 이쪽으로 보내기)
     @PostMapping("/api/register-cafe")
     public Long joinCafe(@Valid @RequestBody RequestCafeDto cafeDto) {
         Long cafeId = cafeService.join(cafeDto);

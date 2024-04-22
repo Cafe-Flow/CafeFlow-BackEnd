@@ -21,8 +21,9 @@ public class SeatRepository {
         return em.find(Seat.class, id);
     }
 
-    public List<Seat> findAll() {
-        return em.createQuery("select r from Seat s", Seat.class)
+    public List<Seat> findAll(Long cafeId) {
+        return em.createQuery("select s from Seat s where s.cafe.id = :cafe_id", Seat.class)
+                .setParameter("cafe_id", cafeId)
                 .getResultList();
     }
 }

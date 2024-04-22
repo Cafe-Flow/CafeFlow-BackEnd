@@ -13,10 +13,10 @@ import org.example.cafeflow.cafe.domain.Cafe;
 public class Seat {
 
     @Builder
-    public Seat(Long id, Cafe cafe, SeatStatus seatStatus, SeatHasPlug seatHasPlug, SeatCoordinates coordinates) {
+    public Seat(Long id, Cafe cafe, SeatStatus seatStatus, Boolean seatHasPlug, SeatCoordinates coordinates) {
         this.id = id;
         this.cafe = cafe;
-        this.seatStatus = seatStatus;
+        this.seatStatus = seatStatus != null ? seatStatus : SeatStatus.AVAILABLE;
         this.seatHasPlug = seatHasPlug;
         this.coordinates = coordinates;
     }
@@ -33,9 +33,12 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus seatStatus;
 
-    @Enumerated(EnumType.STRING)
-    private SeatHasPlug seatHasPlug;
+    private Boolean seatHasPlug;
 
     @Embedded
     private SeatCoordinates coordinates;
+
+    public void registerSeatToCafe(Cafe cafe) {
+        this.cafe = cafe;
+    }
 }

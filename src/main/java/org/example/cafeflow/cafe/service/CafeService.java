@@ -32,8 +32,6 @@ public class CafeService {
 
     public Long join(RequestCafeDto cafeDto) {
         Cafe cafe = cafeDto.toEntity();
-        System.out.println(cafeDto.getCafeCoordinates().getMapX());
-        System.out.println(cafe.getCafeCoordinates().getMapX());
         cafeRepository.save(cafe);
 
         return cafe.getId();
