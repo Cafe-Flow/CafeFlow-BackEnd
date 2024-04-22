@@ -1,10 +1,7 @@
 package org.example.cafeflow.Member.controller;
 
 import jakarta.validation.Valid;
-import org.example.cafeflow.Member.dto.MemberDto;
-import org.example.cafeflow.Member.dto.MemberLoginDto;
-import org.example.cafeflow.Member.dto.MemberRegistrationDto;
-import org.example.cafeflow.Member.dto.TokenDto;
+import org.example.cafeflow.Member.dto.*;
 import org.example.cafeflow.Member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +21,7 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseEntity<TokenDto> registerMember(@Valid @RequestBody MemberRegistrationDto registrationDto) {
+    public ResponseEntity<TokenDto> registerMember(@Valid @ModelAttribute MemberRegistrationDto registrationDto) {
         TokenDto tokenDto = memberService.registerMember(registrationDto);
         return ResponseEntity.ok(tokenDto);
     }
@@ -45,12 +42,22 @@ public class MemberController {
         return ResponseEntity.ok(memberDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MemberDto> updateMember(@PathVariable("id") Long id, @Valid @RequestBody MemberRegistrationDto registrationDto, Authentication authentication) {
+    @PutMapping("/update-profile/{id}")
+    public ResponseEntity<MemberDto> updateMemberProfile(@PathVariable("id") Long id, @Valid @ModelAttribute MemberUpdateDto updateDto, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        MemberDto updatedMember = memberService.updateMember(id, registrationDto, userDetails.getUsername());
+        MemberDto updatedMember = memberService.updateMemberDetails(id, updateDto, userDetails.getUsername());
         return ResponseEntity.ok(updatedMember);
     }
+
+    @PostMapping("/change-password/{id}")
+    public ResponseEntity<?> changePassword(@PathVariable("id") Long id,
+                                            @RequestParam("currentPassword") String currentPassword,
+                                            @RequestParam("newPassword") String newPassword,
+                                            @RequestParam("confirmPassword") String confirmPassword) {
+        memberService.changeMemberPassword(id, currentPassword, newPassword, confirmPassword);
+        return ResponseEntity.ok("비밀번호가 성공적으로 업데이트되었습니다.");
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable("id") Long id, Authentication authentication) {
@@ -80,4 +87,5 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("관리자만 접근 가능합니다.");
         }
     }
+    
 }

@@ -21,8 +21,10 @@ public class Member {
     @Column(nullable = false, length = 50, unique = true)
     private String nickname;
 
-    @Column(nullable = true)
-    private String profileImageUrl;
+
+    @Lob
+    @Column(name = "image", columnDefinition="LONGBLOB",nullable = true)
+    private byte[] image;
 
     @Column(nullable = false, unique = true)
     private String loginId;

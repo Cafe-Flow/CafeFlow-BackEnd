@@ -2,37 +2,52 @@ package org.example.cafeflow.community.controller;
 
 import org.example.cafeflow.community.domain.Board;
 import org.example.cafeflow.community.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/community/boards")
+@RequestMapping("/api/boards")
 public class BoardController {
 
-    @Autowired
-    private BoardService boardService;
+    private final BoardService boardService;
 
-    @PostMapping("/")
-    public ResponseEntity<Board> createBoard(@RequestBody Board board) {
-        return ResponseEntity.ok(boardService.createBoard(board));
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
     }
 
-    @PutMapping("/{boardId}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long boardId, @RequestBody Board board) {
-        return ResponseEntity.ok(boardService.updateBoard(boardId, board));
+    @PostMapping
+    public ResponseEntity<Board> createBoard(@RequestParam("name") String name) {
+        Board board = new Board();
+        board.setName(name);
+        Board createdBoard = boardService.createBoard(board);
+        return ResponseEntity.ok(createdBoard);
     }
 
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
-        boardService.deleteBoard(boardId);
+    @PutMapping("/{id}")
+    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @RequestParam("name") String name) {
+        Board board = new Board();
+        board.setName(name);
+        Board updatedBoard = boardService.updateBoard(id, board);
+        return ResponseEntity.ok(updatedBoard);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+        boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/")
+    @GetMapping("/{id}")
+    public ResponseEntity<Board> getBoardById(@PathVariable Long id) {
+        Board board = boardService.getBoard(id);
+        return ResponseEntity.ok(board);
+    }
+
+    @GetMapping
     public ResponseEntity<List<Board>> getAllBoards() {
-        return ResponseEntity.ok(boardService.getAllBoards());
+        List<Board> boards = boardService.getAllBoards();
+        return ResponseEntity.ok(boards);
     }
 }

@@ -3,14 +3,13 @@ package org.example.cafeflow.Member.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.cafeflow.Member.domain.Member;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberRegistrationDto {
-
-    // 회원 가입 요청 시 사용 : 사용자 이름, 닉네임, 로그인 ID, 이메일, 비밀번호, 성별, 나이, 그리고 사용자의 지역 정보를 포함
     @NotBlank(message = "사용자 이름을 입력해주세요.")
     @Size(min = 2, max = 5, message = "사용자 이름은 2자 이상, 5자 이하여야 합니다.")
     private String username;
@@ -47,4 +46,6 @@ public class MemberRegistrationDto {
 
     @NotNull(message = "사용자 유형을 선택해주세요.")
     private Member.UserType userType;
+
+    private MultipartFile image;
 }

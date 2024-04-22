@@ -1,11 +1,16 @@
 package org.example.cafeflow.community.controller;
 
-import org.example.cafeflow.community.domain.*;
-import org.example.cafeflow.community.dto.*;
+import org.example.cafeflow.community.dto.CommentCreationDto;
+import org.example.cafeflow.community.dto.CommentDto;
+import org.example.cafeflow.community.dto.PostCreationDto;
+import org.example.cafeflow.community.dto.PostDto;
+import org.example.cafeflow.community.dto.PostUpdateDto;
 import org.example.cafeflow.community.service.CommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,92 +21,63 @@ public class CommunityController {
     @Autowired
     private CommunityService communityService;
 
-    @PostMapping("/friends/add")
-    public ResponseEntity<String> addFriend(@RequestBody FriendRequestDto request) {
-        return ResponseEntity.ok(communityService.addFriend(request));
-    }
+//    @PostMapping("/posts")
+//    public ResponseEntity<PostDto> createPost(@RequestParam("boardId") Long boardId,
+//                                              @RequestParam("title") String title,
+//                                              @RequestParam("content") String content,
+//                                              @RequestParam("stateId") Long stateId,
+//                                              @RequestParam("image") MultipartFile image) {
+//        PostCreationDto creationDto = new PostCreationDto(boardId, title, content, image, stateId);
+//        PostDto postDto = communityService.createPost(creationDto);
+//        return new ResponseEntity<>(postDto, HttpStatus.CREATED);
+//    }
+//
+//    @PutMapping("/posts/{id}")
+//    public ResponseEntity<PostDto> updatePost(@PathVariable Long id,
+//                                              @RequestParam("title") String title,
+//                                              @RequestParam("content") String content,
+//                                              @RequestParam("stateId") Long stateId,
+//                                              @RequestParam("image") MultipartFile image) {
+//        PostUpdateDto updateDto = new PostUpdateDto(title, content, image, stateId);
+//        PostDto postDto = communityService.updatePost(id, updateDto);
+//        return ResponseEntity.ok(postDto);
+//    }
 
-    @PostMapping("/posts")
-    public ResponseEntity<Post> createPost(@RequestBody PostCreationDto dto) {
-        Post post = communityService.createPost(dto);
-        return ResponseEntity.ok(post);
-    }
-
-
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
-        return ResponseEntity.ok(communityService.updatePost(postId, dto));
-    }
-
-    @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
-        communityService.deletePost(postId);
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        communityService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/comments")
-    public ResponseEntity<Comment> addComment(@RequestBody CommentCreationDto dto) {
-        return ResponseEntity.ok(communityService.addComment(dto));
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getAllPosts() {
+        List<PostDto> posts = communityService.getAllPosts();
+        return ResponseEntity.ok(posts);
     }
 
-    @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        communityService.deleteComment(commentId);
+//    @GetMapping("/posts/{id}")
+//    public ResponseEntity<PostDto> getPostById(@PathVariable Long id) {
+//        PostDto postDto = communityService.getPostById(id);
+//        return ResponseEntity.ok(postDto);
+//    }
+
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<CommentDto> addCommentToPost(@PathVariable Long postId,
+                                                       @RequestParam("content") String content) {
+        CommentCreationDto creationDto = new CommentCreationDto(postId, content);
+        CommentDto commentDto = communityService.createComment(creationDto);
+        return new ResponseEntity<>(commentDto, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/comments/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        communityService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/posts/{boardId}/{region}")
-    public ResponseEntity<List<Post>> getRegionalPosts(@PathVariable Long boardId, @PathVariable String region) {
-        List<Post> posts = communityService.getPostsForBoardAndRegion(boardId, region);
-        return ResponseEntity.ok(posts);
-    }
 
-    @PostMapping("/meetings")
-    public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDto meetingDto, @RequestParam String location) {
-        Meeting meeting = communityService.organizeCommunityMeeting(meetingDto, location);
-        return ResponseEntity.ok(meeting);
-    }
-
-    @GetMapping("/posts/author/{authorId}")
-    public ResponseEntity<List<Post>> getPostsByAuthor(@PathVariable Long authorId) {
-        List<Post> posts = communityService.getPostsByAuthor(authorId);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/posts/board/{boardId}")
-    public ResponseEntity<List<Post>> getPostsByBoard(@PathVariable Long boardId) {
-        List<Post> posts = communityService.getPostsByBoard(boardId);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/posts/search")
-    public ResponseEntity<List<Post>> searchPosts(@RequestParam String keyword) {
-        List<Post> posts = communityService.searchPostsByContent(keyword);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/members/{memberId}/friends")
-    public ResponseEntity<CommunityMember> getMemberWithFriends(@PathVariable Long memberId) {
-        return communityService.getMemberWithFriends(memberId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/members/username/{username}")
-    public ResponseEntity<CommunityMember> getMemberByUsername(@PathVariable String username) {
-        return communityService.getMemberByUsername(username)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/comments/post/{postId}")
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
-        List<Comment> comments = communityService.getCommentsByPost(postId);
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<List<CommentDto>> getCommentsByPostId(@PathVariable Long postId) {
+        List<CommentDto> comments = communityService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
-    }
-
-    @GetMapping("/boards/author/{authorId}")
-    public ResponseEntity<List<Board>> getBoardsByAuthor(@PathVariable Long authorId) {
-        List<Board> boards = communityService.getBoardsByAuthor(authorId);
-        return ResponseEntity.ok(boards);
     }
 }

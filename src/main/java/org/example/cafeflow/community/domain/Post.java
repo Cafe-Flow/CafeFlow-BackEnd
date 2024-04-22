@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.domain.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,30 +19,50 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private CommunityMember author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member author;
 
+
+    @Column(nullable = false)
+    private String title;
+
+    @Lob
+    @Column(nullable = false)
     private String content;
+
+    @Lob
+    @Column(nullable = true)
+    private byte[] image;
+
+    @ManyToOne
+    @JoinColumn(name = "state_id")
+    private State state;
+
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
 
-    private String imageUrl;
-    private String region;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
-
-    public Post(CommunityMember author, String content, LocalDateTime createdAt, Board board, String imageUrl, String region) {
-        this.author = author;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.board = board;
-        this.imageUrl = imageUrl;
-        this.region = region;
-    }
 }
