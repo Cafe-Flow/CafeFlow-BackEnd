@@ -40,11 +40,14 @@ public class SeatService {
         return seats.stream()
             .map(s -> ResponseSeatDto.builder()
                     .id(s.getId())
-                    .seatStatus(s.getSeatStatus())
                     .seatHasPlug(s.getSeatHasPlug())
                     .coordinates(s.getCoordinates())
                     .build()
             )
             .collect(Collectors.toList());
     }
+
+//    public List<ResponseSeatDto> updateCafeSeats(Long cafeId) {
+//
+//    }
 }

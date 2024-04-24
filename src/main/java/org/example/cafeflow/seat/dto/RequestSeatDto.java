@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.cafeflow.seat.domain.Seat;
 import org.example.cafeflow.seat.domain.SeatCoordinates;
-import org.example.cafeflow.seat.domain.SeatStatus;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

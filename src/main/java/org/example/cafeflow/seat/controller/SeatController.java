@@ -20,8 +20,8 @@ public class SeatController {
     //WebSocket
     @MessageMapping("/seat") //  -> /app/seat
     @SendTo("/topic/greetings")
-    public SeatStatusDto seatStatus(@RequestBody SeatStatus status) {
-        SeatStatusDto statusDto = new SeatStatusDto(status);
+    public SeatStatusDto seatStatus(SeatStatus seatStatus) {
+        SeatStatusDto statusDto = new SeatStatusDto(seatStatus);
         return statusDto;
     }
 
@@ -39,10 +39,10 @@ public class SeatController {
     }
 
     //좌석 수정(관리자용)
-    @PutMapping("/api/cafe/{cafe_id}/seat")
-    public List<ResponseSeatDto> updateCafeSeats(@PathVariable("cafe_id") Long cafeId, @RequestBody List<RequestSeatDto> seatDtoList) {
-        return seatService.cafeSeats(cafeId);
-    }
+//    @PutMapping("/api/cafe/{cafe_id}/seat")
+//    public List<ResponseSeatDto> updateCafeSeats(@PathVariable("cafe_id") Long cafeId, @RequestBody List<RequestSeatDto> seatDtoList) {
+//        return seatService.updateCafeSeats(cafeId);
+//    }
 
 
 
