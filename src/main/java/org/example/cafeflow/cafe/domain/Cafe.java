@@ -19,7 +19,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, double reviewsRating, int reviewsCount, String description, CafeCoordinates cafeCoordinates, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, double reviewsRating, int reviewsCount, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -27,7 +27,6 @@ public class Cafe {
         this.reviewsRating = reviewsRating;
         this.reviewsCount = reviewsCount;
         this.description = description;
-        this.cafeCoordinates = cafeCoordinates;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -58,8 +57,6 @@ public class Cafe {
     private int reviewsCount;
 
     private String description;
-    @Embedded
-    private CafeCoordinates cafeCoordinates;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -89,5 +86,9 @@ public class Cafe {
 
     public void addSeat(Seat seat) {
         seats.add(seat);
+    }
+
+    public void removeAllSeat() {
+        seats.clear();
     }
 }

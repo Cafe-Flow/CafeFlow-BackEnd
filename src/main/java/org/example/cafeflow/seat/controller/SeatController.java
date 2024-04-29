@@ -38,11 +38,12 @@ public class SeatController {
         return seatService.cafeSeats(cafeId);
     }
 
-    //좌석 수정(관리자용)
-//    @PutMapping("/api/cafe/{cafe_id}/seat")
-//    public List<ResponseSeatDto> updateCafeSeats(@PathVariable("cafe_id") Long cafeId, @RequestBody List<RequestSeatDto> seatDtoList) {
-//        return seatService.updateCafeSeats(cafeId);
-//    }
+//    좌석 수정(관리자용)
+    @PutMapping("/api/cafe/{cafe_id}/seat")
+    public List<RequestSeatDto> updateCafeSeats(@PathVariable("cafe_id") Long cafeId, @RequestBody List<RequestSeatDto> seatDtoList) {
+        seatService.updateCafeSeats(cafeId, seatDtoList);
+        return seatDtoList;
+    }
 
 
 

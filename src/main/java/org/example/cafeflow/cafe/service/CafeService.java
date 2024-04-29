@@ -1,26 +1,14 @@
 package org.example.cafeflow.cafe.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
-import org.example.cafeflow.cafe.domain.CafeCoordinates;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,7 +96,6 @@ public class CafeService {
                 .reviewCount(cafe.getReviewsCount())
                 .reviewsRating(cafe.getReviewsRating())
                 .description(cafe.getDescription())
-                .cafeCoordinates(cafe.getCafeCoordinates())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();

@@ -3,7 +3,6 @@ package org.example.cafeflow.cafe.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.example.cafeflow.cafe.domain.Cafe;
-import org.example.cafeflow.cafe.domain.CafeCoordinates;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +19,6 @@ public class RequestCafeDto {
 
     private String description;
 
-    private CafeCoordinates cafeCoordinates;
 
     public Cafe toEntity() {
         LocalDateTime time = LocalDateTime.now();
@@ -29,7 +27,6 @@ public class RequestCafeDto {
                 .address(address)
                 .reviewsCount(0)
                 .description(description)
-                .cafeCoordinates(cafeCoordinates)
                 .createdAt(time)
                 .updatedAt(time)
                 .build();

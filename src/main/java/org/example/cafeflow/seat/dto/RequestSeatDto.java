@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.seat.domain.Seat;
 import org.example.cafeflow.seat.domain.SeatCoordinates;
 
@@ -21,4 +22,5 @@ public class RequestSeatDto {
                 .build();
         return seat;
     }
+
 }

@@ -38,7 +38,6 @@ public class Seat {
     @Embedded
     private SeatCoordinates coordinates;
 
-    private int seatNumber;
 
     public void registerSeatToCafe(Cafe cafe) {
         this.cafe = cafe;

@@ -47,7 +47,8 @@ public class SeatService {
             .collect(Collectors.toList());
     }
 
-//    public List<ResponseSeatDto> updateCafeSeats(Long cafeId) {
-//
-//    }
+    public void updateCafeSeats(Long cafeId, List<RequestSeatDto> seatDtoList) {
+        seatRepository.removeAll(cafeId);
+        registerSeats(cafeId, seatDtoList);
+    }
 }

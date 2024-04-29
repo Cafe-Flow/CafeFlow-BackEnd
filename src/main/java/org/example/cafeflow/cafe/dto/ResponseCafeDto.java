@@ -1,7 +1,6 @@
 package org.example.cafeflow.cafe.dto;
 
 import lombok.*;
-import org.example.cafeflow.cafe.domain.CafeCoordinates;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +16,6 @@ public class ResponseCafeDto {
     private int reviewCount;
     private double reviewsRating;
     private String description;
-    private CafeCoordinates cafeCoordinates;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

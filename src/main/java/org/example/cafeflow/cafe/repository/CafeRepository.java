@@ -55,6 +55,4 @@ public class CafeRepository {
         if(cafe != null)
             em.remove(cafe);
     }
-
-
 }
