@@ -41,7 +41,10 @@ public class SeatService {
             .map(s -> ResponseSeatDto.builder()
                     .id(s.getId())
                     .seatHasPlug(s.getSeatHasPlug())
-                    .coordinates(s.getCoordinates())
+                    .seatSize(s.getSeatSize())
+                    .seatNumber(s.getSeatNumber())
+                    .seatAngle(s.getSeatAngle())
+                    .seatCoordinates(s.getSeatCoordinates())
                     .build()
             )
             .collect(Collectors.toList());

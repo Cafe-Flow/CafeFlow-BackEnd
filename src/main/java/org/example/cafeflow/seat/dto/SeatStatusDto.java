@@ -10,5 +10,9 @@ import org.example.cafeflow.seat.domain.SeatStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SeatStatusDto { //websocket 용
-    private SeatStatus seatStatus;
+    private String seatStatus;
+
+    public SeatStatus getSeatStatusEnum() {
+        return SeatStatus.valueOf(seatStatus);
+    }
 }

@@ -8,6 +8,7 @@ import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.example.cafeflow.seat.service.SeatService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,15 +18,6 @@ import java.util.List;
 public class SeatController {
     private final SeatService seatService;
 
-    //WebSocket
-    @MessageMapping("/seat") //  -> /app/seat
-    @SendTo("/topic/greetings")
-    public SeatStatusDto seatStatus(SeatStatus seatStatus) {
-        SeatStatusDto statusDto = new SeatStatusDto(seatStatus);
-        return statusDto;
-    }
-
-    //Http
     //좌석 등록
     @PostMapping("/api/cafe/{cafe_id}/seat-register")
     public List<Long> registerSeats(@PathVariable("cafe_id") Long cafeId, @RequestBody List<RequestSeatDto> seatDtoList) {
