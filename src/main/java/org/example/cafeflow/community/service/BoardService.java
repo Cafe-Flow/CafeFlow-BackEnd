@@ -6,6 +6,7 @@ import org.example.cafeflow.community.repository.BoardRepository;
 import org.example.cafeflow.community.repository.PostRepository;
 import org.example.cafeflow.exception.BoardIntegrityViolationException;
 import org.example.cafeflow.exception.BoardNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,16 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("게시판을 찾을 수 없습니다. ID: " + boardId));
+        // 프록시 해결
+        return (Board) Hibernate.unproxy(board);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> getAllPostsInBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException("게시판을 찾을 수 없습니다. ID: " + boardId));
+        return board.getPosts();
     }
 }

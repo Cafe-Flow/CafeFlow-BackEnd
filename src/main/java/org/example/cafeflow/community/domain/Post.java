@@ -61,7 +61,7 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Board board;
 

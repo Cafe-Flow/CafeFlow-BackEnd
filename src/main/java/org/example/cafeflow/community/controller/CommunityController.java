@@ -157,29 +157,33 @@ public class CommunityController {
         return ResponseEntity.ok(comments);
     }
     @GetMapping("/posts/search")
-    public ResponseEntity<List<PostDto>> getPostsByKeyword(@RequestParam String keyword) {
+    public ResponseEntity<List<PostDto>> getPostsByKeyword(@RequestParam("keyword") String keyword) {
         List<PostDto> posts = communityService.getPostsByKeyword(keyword);
         return ResponseEntity.ok(posts);
     }
     @GetMapping("/posts/title")
-    public ResponseEntity<List<PostDto>> getPostsByTitle(@RequestParam String title) {
+    public ResponseEntity<List<PostDto>> getPostsByTitle(@RequestParam("title") String title) {
         List<PostDto> posts = communityService.getPostsByTitle(title);
         return ResponseEntity.ok(posts);
     }
-    @GetMapping("/posts/author/username")
-    public ResponseEntity<List<PostDto>> getPostsByAuthorUsername(@RequestParam String username) {
-        List<PostDto> posts = communityService.getPostsByAuthorUsername(username);
+    @GetMapping("/posts/author/nickname")
+    public ResponseEntity<List<PostDto>> getPostsByAuthorNickname(@RequestParam("nickname") String nickname) {
+        List<PostDto> posts = communityService.getPostsByAuthorNickname(nickname);
         return ResponseEntity.ok(posts);
     }
     @GetMapping("/posts/state/name")
-    public ResponseEntity<List<PostDto>> getPostsByStateName(@RequestParam String stateName) {
+    public ResponseEntity<List<PostDto>> getPostsByStateName(@RequestParam("stateName") String stateName) {
         List<PostDto> posts = communityService.getPostsByStateName(stateName);
         return ResponseEntity.ok(posts);
     }
-    @GetMapping("/comments/author/username")
-    public ResponseEntity<List<CommentDto>> getCommentsByAuthorUsername(@RequestParam String username) {
-        List<CommentDto> comments = communityService.getCommentsByAuthorUsername(username);
+    @GetMapping("/comments/author/nickname")
+    public ResponseEntity<List<CommentDto>> getCommentsByAuthorUsername(@RequestParam("nickname") String nickname) {
+        List<CommentDto> comments = communityService.getCommentsByAuthorNickname(nickname);
         return ResponseEntity.ok(comments);
     }
-
+    @GetMapping("/posts/board/{boardId}")
+    public ResponseEntity<List<PostDto>> getPostsByBoardId(@PathVariable("boardId") Long boardId) {
+        List<PostDto> posts = communityService.getPostsByBoardId(boardId);
+        return ResponseEntity.ok(posts);
+    }
 }
