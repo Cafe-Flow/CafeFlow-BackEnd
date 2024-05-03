@@ -181,5 +181,9 @@ public class CommunityController {
         List<CommentDto> comments = communityService.getCommentsByAuthorNickname(nickname);
         return ResponseEntity.ok(comments);
     }
-
+    @GetMapping("/posts/board/{boardId}")
+    public ResponseEntity<List<PostDto>> getPostsByBoardId(@PathVariable("boardId") Long boardId) {
+        List<PostDto> posts = communityService.getPostsByBoardId(boardId);
+        return ResponseEntity.ok(posts);
+    }
 }

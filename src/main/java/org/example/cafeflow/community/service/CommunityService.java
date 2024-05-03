@@ -154,6 +154,7 @@ public class CommunityService {
         dto.setStateName(post.getState().getName());
         dto.setLikesCount(post.getLikedBy().size());
         dto.setLikedByCurrentUser(isCurrentUserLiked(post.getId()));
+        dto.setCommentCount(post.getComments().size());
         dto.setViews(post.getViews());
         dto.setComments(post.getComments().stream().map(this::convertCommentToDto).collect(Collectors.toList()));
         return dto;
@@ -246,5 +247,12 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByAuthorId(Long authorId) {
         return commentRepository.findByAuthorId(authorId).stream().map(this::convertCommentToDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostDto> getPostsByBoardId(Long boardId) {
+        return postRepository.findByBoardId(boardId).stream()
+                .map(this::convertPostToDto)
+                .collect(Collectors.toList());
     }
 }
