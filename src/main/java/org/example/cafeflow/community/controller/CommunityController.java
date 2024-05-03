@@ -166,9 +166,9 @@ public class CommunityController {
         List<PostDto> posts = communityService.getPostsByTitle(title);
         return ResponseEntity.ok(posts);
     }
-    @GetMapping("/posts/author/username")
-    public ResponseEntity<List<PostDto>> getPostsByAuthorUsername(@RequestParam("username") String username) {
-        List<PostDto> posts = communityService.getPostsByAuthorUsername(username);
+    @GetMapping("/posts/author/nickname")
+    public ResponseEntity<List<PostDto>> getPostsByAuthorNickname(@RequestParam("nickname") String nickname) {
+        List<PostDto> posts = communityService.getPostsByAuthorNickname(nickname);
         return ResponseEntity.ok(posts);
     }
     @GetMapping("/posts/state/name")

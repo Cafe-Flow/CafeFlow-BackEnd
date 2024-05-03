@@ -215,8 +215,8 @@ public class CommunityService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostDto> getPostsByAuthorUsername(String username) {
-        return postRepository.findByAuthorUsername(username).stream().map(this::convertPostToDto).collect(Collectors.toList());
+    public List<PostDto> getPostsByAuthorNickname(String nickname) {
+        return postRepository.findByAuthorUsername(nickname).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
