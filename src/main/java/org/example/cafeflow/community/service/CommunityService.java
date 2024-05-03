@@ -216,7 +216,7 @@ public class CommunityService {
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByAuthorNickname(String nickname) {
-        return postRepository.findByAuthorUsername(nickname).stream().map(this::convertPostToDto).collect(Collectors.toList());
+        return postRepository.findByAuthorNickname(nickname).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -231,7 +231,7 @@ public class CommunityService {
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByAuthorNickname(String nickname) {
-        return commentRepository.findByAuthorUsername(nickname).stream().map(this::convertCommentToDto).collect(Collectors.toList());
+        return commentRepository.findByAuthorNickname(nickname).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByAuthorId(Long authorId) {
