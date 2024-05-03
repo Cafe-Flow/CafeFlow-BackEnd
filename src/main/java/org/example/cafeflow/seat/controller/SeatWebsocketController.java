@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.seat.domain.SeatStatus;
 import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.example.cafeflow.seat.service.SeatService;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SeatWebsocketController {
     private final SeatService seatService;
     //WebSocket
-    @MessageMapping("/seat") //  -> /app/seat
-    @SendTo("/topic/greetings")
-    public SeatStatusDto seatStatus(String seatStatus) {
-        SeatStatusDto seatStatusDto = new SeatStatusDto(seatStatus.valueOf(seatStatus));
-        return seatStatusDto;
+    @MessageMapping("/cafe/{cafeId}/seat") //  -> /app/cafe/1/seat
+    @SendTo("/topic/cafe/{cafeId}/seat")
+    public SeatStatusDto seatStatus(@DestinationVariable("cafeId") Long cafeId, SeatStatusDto seatStatus) {
+        return seatStatus;
     }
 }
