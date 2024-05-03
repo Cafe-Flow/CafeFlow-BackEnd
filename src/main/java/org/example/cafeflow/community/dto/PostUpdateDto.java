@@ -20,7 +20,6 @@ public class PostUpdateDto {
 
     private MultipartFile image;
 
-
     @NotNull(message = "지역 ID는 업데이트 시 필수입니다.")
     private Long stateId;
 }

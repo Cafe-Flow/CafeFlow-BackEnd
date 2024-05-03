@@ -1,6 +1,7 @@
 package org.example.cafeflow.community.controller;
 
 import org.example.cafeflow.community.domain.Board;
+import org.example.cafeflow.community.domain.Post;
 import org.example.cafeflow.community.service.BoardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class BoardController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @RequestParam("name") String name) {
+    public ResponseEntity<Board> updateBoard(@PathVariable("id") Long id, @RequestParam("name") String name) {
         Board board = new Board();
         board.setName(name);
         Board updatedBoard = boardService.updateBoard(id, board);
@@ -34,13 +35,13 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id) {
         boardService.deleteBoard(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Board> getBoardById(@PathVariable Long id) {
+    public ResponseEntity<Board> getBoardById(@PathVariable("id") Long id) {
         Board board = boardService.getBoard(id);
         return ResponseEntity.ok(board);
     }
@@ -50,4 +51,6 @@ public class BoardController {
         List<Board> boards = boardService.getAllBoards();
         return ResponseEntity.ok(boards);
     }
+
+
 }

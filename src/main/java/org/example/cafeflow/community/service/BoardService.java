@@ -4,7 +4,10 @@ import org.example.cafeflow.community.domain.Board;
 import org.example.cafeflow.community.domain.Post;
 import org.example.cafeflow.community.repository.BoardRepository;
 import org.example.cafeflow.community.repository.PostRepository;
+import org.example.cafeflow.exception.BoardIntegrityViolationException;
+import org.example.cafeflow.exception.BoardNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +38,12 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시판을 찾을 수 없습니다."));
-        boardRepository.delete(board);
+        Board board = this.getBoard(boardId);
+        try {
+            boardRepository.delete(board);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BoardIntegrityViolationException("게시판 삭제 중 데이터 무결성 문제 발생: " + ex.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -48,17 +54,6 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Board getBoard(Long boardId) {
         return boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시판을 찾을 수 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Post> getPostsByBoard(Long boardId) {
-        return postRepository.findByBoardId(boardId);
-    }
-
-    @Transactional(readOnly = true)
-    public Board getBoardByName(String name) {
-        Optional<Board> board = boardRepository.findByName(name);
-        return board.orElseThrow(() -> new IllegalArgumentException("해당 이름의 게시판을 찾을 수 없습니다: " + name));
+                .orElseThrow(() -> new BoardNotFoundException("게시판을 찾을 수 없습니다. ID: " + boardId));
     }
 }

@@ -15,6 +15,9 @@ public class PostCreationDto {
     @NotNull(message = "게시판 ID는 필수입니다.")
     private Long boardId;
 
+    private Long authorId;
+    private String authorNickname;
+
     @NotBlank(message = "게시글 제목은 필수입니다.")
     private String title;
 

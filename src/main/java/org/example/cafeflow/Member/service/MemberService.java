@@ -38,7 +38,7 @@ public class MemberService {
 
         Member member = buildMember(registrationDto, state, city);
         memberRepository.save(member);
-        String token = createToken(member);
+        String token = jwtTokenProvider.createToken(member.getLoginId(), member.getUserType());
         return new TokenDto(token);
     }
 
@@ -92,7 +92,8 @@ public class MemberService {
         Member member = memberRepository.findByLoginId(loginDto.getLoginId())
                 .orElseThrow(() -> new UserNotFoundException("회원 정보를 찾을 수 없습니다."));
         validatePassword(loginDto.getPassword(), member.getPasswordHash());
-        return new TokenDto(createToken(member));
+        String token = jwtTokenProvider.createToken(member.getLoginId(), member.getUserType());
+        return new TokenDto(token);
     }
 
     private void validatePassword(String rawPassword, String encodedPassword) {

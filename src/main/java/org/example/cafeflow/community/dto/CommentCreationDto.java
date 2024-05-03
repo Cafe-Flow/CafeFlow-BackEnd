@@ -14,6 +14,8 @@ public class CommentCreationDto {
     @NotNull(message = "게시글 ID는 필수입니다.")
     private Long postId;
 
+    private Long authorId;
+    private String authorNickname;
     @NotNull()
     private Long parentCommentId;
 

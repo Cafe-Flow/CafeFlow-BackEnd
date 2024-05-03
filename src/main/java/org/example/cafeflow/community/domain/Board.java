@@ -17,7 +17,4 @@ public class Board {
     private Long id;
 
     private String name;
-
-    @OneToMany(mappedBy = "board")
-    private Set<Post> posts;
 }
