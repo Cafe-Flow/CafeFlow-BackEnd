@@ -12,6 +12,8 @@ import org.example.cafeflow.community.repository.BoardRepository;
 import org.example.cafeflow.community.repository.CommentRepository;
 import org.example.cafeflow.community.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +40,6 @@ public class CommunityService {
     @Autowired
     private BoardRepository boardRepository;
 
-
     @Transactional
     public PostDto createPost(PostCreationDto creationDto, MultipartFile image) throws IOException {
         Member member = memberRepository.findById(creationDto.getAuthorId())
@@ -59,10 +60,8 @@ public class CommunityService {
         }
 
         postRepository.save(post);
-        return convertToDto(post);
+        return convertPostToDto(post);
     }
-
-
 
     @Transactional
     public PostDto updatePost(Long postId, PostUpdateDto updateDto) throws IOException {
@@ -78,7 +77,7 @@ public class CommunityService {
         post.setState(state);
 
         postRepository.save(post);
-        return convertToDto(post);
+        return convertPostToDto(post);
     }
 
     @Transactional
@@ -91,7 +90,7 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public List<PostDto> getAllPosts() {
         return postRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(this::convertPostToDto)
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +113,7 @@ public class CommunityService {
         }
 
         commentRepository.save(comment);
-        return convertToDto(comment);
+        return convertCommentToDto(comment);
     }
 
     @Transactional
@@ -131,7 +130,7 @@ public class CommunityService {
         reply.setParentComment(parentComment);
 
         commentRepository.save(reply);
-        return convertToDto(reply);
+        return convertCommentToDto(reply);
     }
 
     @Transactional
@@ -141,7 +140,7 @@ public class CommunityService {
         commentRepository.delete(comment);
     }
 
-    private PostDto convertToDto(Post post) {
+    private PostDto convertPostToDto(Post post) {
         PostDto dto = new PostDto();
         dto.setId(post.getId());
         dto.setBoardId(post.getBoard().getId());
@@ -154,12 +153,13 @@ public class CommunityService {
         dto.setStateId(post.getState().getId());
         dto.setStateName(post.getState().getName());
         dto.setLikesCount(post.getLikedBy().size());
+        dto.setLikedByCurrentUser(isCurrentUserLiked(post.getId()));
         dto.setViews(post.getViews());
-        dto.setComments(post.getComments().stream().map(this::convertToDto).collect(Collectors.toList()));
+        dto.setComments(post.getComments().stream().map(this::convertCommentToDto).collect(Collectors.toList()));
         return dto;
     }
 
-    private CommentDto convertToDto(Comment comment) {
+    private CommentDto convertCommentToDto(Comment comment) {
         CommentDto dto = new CommentDto();
         dto.setId(comment.getId());
         dto.setPostId(comment.getPost().getId());
@@ -168,17 +168,27 @@ public class CommunityService {
         dto.setCreatedAt(comment.getCreatedAt());
         dto.setUpdatedAt(comment.getUpdatedAt());
         dto.setParentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
-        dto.setReplies(comment.getReplies().stream().map(this::convertToDto).collect(Collectors.toList()));
+        dto.setReplies(comment.getReplies().stream().map(this::convertCommentToDto).collect(Collectors.toList()));
         return dto;
     }
 
-    @Transactional
+    private boolean isCurrentUserLiked(Long postId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        Member member = memberRepository.findByLoginId(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return post.getLikedBy().contains(member);
+    }
+
+    @Transactional(readOnly = true)
     public PostDto getPostById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         post.incrementViews();
         postRepository.save(post);
-        return convertToDto(post);
+        return convertPostToDto(post);
     }
 
     @Transactional
@@ -196,48 +206,45 @@ public class CommunityService {
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByKeyword(String keyword) {
-        return postRepository.searchByKeyword(keyword).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.searchByKeyword(keyword).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByTitle(String title) {
-        return postRepository.findByTitleContaining(title).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.findByTitleContaining(title).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByAuthorUsername(String username) {
-        return postRepository.findByAuthorUsername(username).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.findByAuthorUsername(username).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByStateName(String stateName) {
-        return postRepository.findByStateName(stateName).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.findByStateName(stateName).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByPostId(Long postId) {
-        return commentRepository.findByPostId(postId).stream().map(this::convertToDto).collect(Collectors.toList());
+        return commentRepository.findByPostId(postId).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByAuthorUsername(String username) {
-        return commentRepository.findByAuthorUsername(username).stream().map(this::convertToDto).collect(Collectors.toList());
+        return commentRepository.findByAuthorUsername(username).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
-
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByAuthorId(Long authorId) {
-        return postRepository.findByAuthorId(authorId).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.findByAuthorId(authorId).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByStateId(Long stateId) {
-        return postRepository.findByStateId(stateId).stream().map(this::convertToDto).collect(Collectors.toList());
+        return postRepository.findByStateId(stateId).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByAuthorId(Long authorId) {
-        return commentRepository.findByAuthorId(authorId).stream().map(this::convertToDto).collect(Collectors.toList());
+        return commentRepository.findByAuthorId(authorId).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
-
-
 }
