@@ -230,8 +230,8 @@ public class CommunityService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentDto> getCommentsByAuthorUsername(String username) {
-        return commentRepository.findByAuthorUsername(username).stream().map(this::convertCommentToDto).collect(Collectors.toList());
+    public List<CommentDto> getCommentsByAuthorNickname(String nickname) {
+        return commentRepository.findByAuthorUsername(nickname).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByAuthorId(Long authorId) {

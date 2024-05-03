@@ -16,8 +16,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByTitleContaining(String title);
 
-    @Query("SELECT p FROM Post p JOIN p.author a WHERE a.username = :username")
-    List<Post> findByAuthorUsername(@Param("username") String username);
+    @Query("SELECT p FROM Post p JOIN p.author a WHERE a.nickname = :nickname")
+    List<Post> findByAuthorUsername(@Param("nickname") String nickname);
 
     List<Post> findByStateId(Long stateId);
 
