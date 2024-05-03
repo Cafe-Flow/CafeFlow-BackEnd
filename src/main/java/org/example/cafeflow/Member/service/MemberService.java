@@ -3,10 +3,7 @@ package org.example.cafeflow.Member.service;
 import org.example.cafeflow.Member.domain.City;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.Member.domain.State;
-import org.example.cafeflow.Member.dto.MemberDto;
-import org.example.cafeflow.Member.dto.MemberLoginDto;
-import org.example.cafeflow.Member.dto.MemberRegistrationDto;
-import org.example.cafeflow.Member.dto.TokenDto;
+import org.example.cafeflow.Member.dto.*;
 import org.example.cafeflow.Member.repository.CityRepository;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.Member.repository.StateRepository;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,7 @@ public class MemberService {
 
         Member member = buildMember(registrationDto, state, city);
         memberRepository.save(member);
-        String token = createToken(member);
+        String token = jwtTokenProvider.createToken(member.getLoginId(), member.getUserType());
         return new TokenDto(token);
     }
 
@@ -67,6 +65,13 @@ public class MemberService {
     }
 
     private Member buildMember(MemberRegistrationDto dto, State state, City city) {
+        byte[] imageBytes = null;
+        try {
+            imageBytes = dto.getImage() != null ? dto.getImage().getBytes() : null;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
+        }
+
         return Member.builder()
                 .username(dto.getUsername())
                 .nickname(dto.getNickname())
@@ -78,14 +83,17 @@ public class MemberService {
                 .userType(dto.getUserType())
                 .state(state)
                 .city(city)
+                .image(imageBytes)
                 .build();
     }
+
 
     public TokenDto loginMember(MemberLoginDto loginDto) {
         Member member = memberRepository.findByLoginId(loginDto.getLoginId())
                 .orElseThrow(() -> new UserNotFoundException("회원 정보를 찾을 수 없습니다."));
         validatePassword(loginDto.getPassword(), member.getPasswordHash());
-        return new TokenDto(createToken(member));
+        String token = jwtTokenProvider.createToken(member.getLoginId(), member.getUserType());
+        return new TokenDto(token);
     }
 
     private void validatePassword(String rawPassword, String encodedPassword) {
@@ -104,28 +112,38 @@ public class MemberService {
                 .orElseThrow(() -> new UserNotFoundException("회원 정보를 찾을 수 없습니다."));
     }
 
-    public MemberDto updateMember(Long id, MemberRegistrationDto registrationDto, String username) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("회원을 찾을 수 없습니다: " + id));
-        if (!member.getLoginId().equals(username) && !member.getUserType().equals(Member.UserType.ADMIN)) {
-            throw new UnauthorizedAccessException("수정 권한이 없습니다.");
+    public MemberDto updateMemberDetails(Long id, MemberUpdateDto updateDto, String username) {
+        Member existingMember = memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 회원을 찾을 수 없습니다: " + id));
+
+        if (!existingMember.getLoginId().equals(username) && !existingMember.getUserType().equals(Member.UserType.ADMIN)) {
+            throw new UnauthorizedAccessException("이 회원 정보를 업데이트할 권한이 없습니다.");
         }
-        updateMemberDetails(member, registrationDto);
-        memberRepository.save(member);
-        return convertToMemberDto(member);
+
+        updateMemberFromDto(existingMember, updateDto);
+        memberRepository.save(existingMember);
+        return convertToMemberDto(existingMember);
     }
 
-    private void updateMemberDetails(Member member, MemberRegistrationDto dto) {
+    private void updateMemberFromDto(Member member, MemberUpdateDto dto) {
+        byte[] imageBytes = null;
+        try {
+            imageBytes = dto.getImage() != null ? dto.getImage().getBytes() : null;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
+        }
+
         member.setUsername(dto.getUsername());
         member.setNickname(dto.getNickname());
         member.setEmail(dto.getEmail());
-        member.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         member.setGender(dto.getGender());
         member.setAge(dto.getAge());
         member.setUserType(dto.getUserType());
         member.setCity(getCity(dto.getCityId()));
         member.setState(getState(dto.getStateId()));
+        member.setImage(imageBytes);
     }
+
 
     public List<MemberDto> getAllMembers() {
         return memberRepository.findAll().stream()
@@ -149,7 +167,8 @@ public class MemberService {
                 member.getAge(),
                 member.getCity().getId(),
                 member.getState().getId(),
-                member.getUserType()
+                member.getUserType(),
+                member.getImage()
         );
     }
 
@@ -166,5 +185,22 @@ public class MemberService {
         }
         memberRepository.deleteById(id);
     }
+
+    public void changeMemberPassword(Long memberId, String currentPassword, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+        }
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 회원을 찾을 수 없습니다: " + memberId));
+
+        if (!passwordEncoder.matches(currentPassword, member.getPasswordHash())) {
+            throw new InvalidPasswordException("현재 비밀번호가 정확하지 않습니다.");
+        }
+
+        member.setPasswordHash(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+    }
+
 
 }

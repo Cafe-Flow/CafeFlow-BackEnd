@@ -1,76 +1,83 @@
 package org.example.cafeflow.community.service;
 
-import org.example.cafeflow.community.domain.*;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.domain.State;
+import org.example.cafeflow.Member.repository.MemberRepository;
+import org.example.cafeflow.Member.repository.StateRepository;
+import org.example.cafeflow.community.domain.Board;
+import org.example.cafeflow.community.domain.Comment;
+import org.example.cafeflow.community.domain.Post;
 import org.example.cafeflow.community.dto.*;
-import org.example.cafeflow.community.repository.*;
+import org.example.cafeflow.community.repository.BoardRepository;
+import org.example.cafeflow.community.repository.CommentRepository;
+import org.example.cafeflow.community.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommunityService {
 
     @Autowired
-    private CommunityMemberRepository communityMemberRepository;
-    @Autowired
     private PostRepository postRepository;
+
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private StateRepository stateRepository;
+
     @Autowired
     private BoardRepository boardRepository;
-    @Autowired
-    private MeetingRepository meetingRepository;
-    @Autowired
-    private PlanRepository planRepository;
 
     @Transactional
-    public String addFriend(FriendRequestDto request) {
-        CommunityMember member = communityMemberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-        CommunityMember friend = communityMemberRepository.findById(request.getFriendId())
-                .orElseThrow(() -> new IllegalArgumentException("친구를 찾을 수 없습니다."));
+    public PostDto createPost(PostCreationDto creationDto, MultipartFile image) throws IOException {
+        Member member = memberRepository.findById(creationDto.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        State state = stateRepository.findById(creationDto.getStateId())
+                .orElseThrow(() -> new IllegalArgumentException("지역을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(creationDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("게시판을 찾을 수 없습니다."));
 
-        if (member.getFriends().stream().anyMatch(f -> f.getFriend().getId().equals(friend.getId()))) {
-            throw new IllegalStateException("이미 친구입니다.");
+        Post post = new Post();
+        post.setTitle(creationDto.getTitle());
+        post.setContent(creationDto.getContent());
+        post.setState(state);
+        post.setAuthor(member);
+        post.setBoard(board);
+        if (image != null && !image.isEmpty()) {
+            post.setImage(image.getBytes());
         }
 
-        Friendship friendship = new Friendship();
-        friendship.setMember(member);
-        friendship.setFriend(friend);
-        friendship.setCreatedAt(LocalDateTime.now());
-        member.getFriends().add(friendship);
-        friend.getFriends().add(friendship);
-
-        communityMemberRepository.save(member);
-        communityMemberRepository.save(friend);
-        return "친구 추가 완료";
-    }
-
-    @Transactional
-    public Post createPost(PostCreationDto dto) {
-        CommunityMember author = communityMemberRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
-        Board board = boardRepository.findById(dto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("보드를 찾을 수 없습니다."));
-
-        Post post = new Post(author, dto.getContent(), LocalDateTime.now(), board, dto.getImageUrl(), null);
         postRepository.save(post);
-        return post;
+        return convertPostToDto(post);
     }
 
-
     @Transactional
-    public Post updatePost(Long postId, PostUpdateDto dto) {
+    public PostDto updatePost(Long postId, PostUpdateDto updateDto) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        post.setContent(dto.getContent());
-        post.setCreatedAt(LocalDateTime.now());
+        post.setTitle(updateDto.getTitle());
+        post.setContent(updateDto.getContent());
+        if (updateDto.getImage() != null && !updateDto.getImage().isEmpty()) {
+            post.setImage(updateDto.getImage().getBytes());
+        }
+        State state = stateRepository.findById(updateDto.getStateId())
+                .orElseThrow(() -> new IllegalArgumentException("지역을 찾을 수 없습니다."));
+        post.setState(state);
+
         postRepository.save(post);
-        return post;
+        return convertPostToDto(post);
     }
 
     @Transactional
@@ -80,20 +87,50 @@ public class CommunityService {
         postRepository.delete(post);
     }
 
+    @Transactional(readOnly = true)
+    public List<PostDto> getAllPosts() {
+        return postRepository.findAll().stream()
+                .map(this::convertPostToDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public Comment addComment(CommentCreationDto dto) {
-        Post post = postRepository.findById(dto.getPostId())
+    public CommentDto createComment(CommentCreationDto creationDto) {
+        Post post = postRepository.findById(creationDto.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        CommunityMember author = communityMemberRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
+        Member member = memberRepository.findById(creationDto.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Comment comment = new Comment();
         comment.setPost(post);
-        comment.setAuthor(author);
-        comment.setContent(dto.getContent());
-        comment.setCreatedAt(LocalDateTime.now());
+        comment.setAuthor(member);
+        comment.setContent(creationDto.getContent());
+
+        if (creationDto.getParentCommentId() != null) {
+            Comment parentComment = commentRepository.findById(creationDto.getParentCommentId())
+                    .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다."));
+            comment.setParentComment(parentComment);
+        }
+
         commentRepository.save(comment);
-        return comment;
+        return convertCommentToDto(comment);
+    }
+
+    @Transactional
+    public CommentDto createReply(Long parentCommentId, CommentCreationDto creationDto) {
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다."));
+        Member member = memberRepository.findById(creationDto.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Comment reply = new Comment();
+        reply.setPost(parentComment.getPost());
+        reply.setAuthor(member);
+        reply.setContent(creationDto.getContent());
+        reply.setParentComment(parentComment);
+
+        commentRepository.save(reply);
+        return convertCommentToDto(reply);
     }
 
     @Transactional
@@ -103,127 +140,111 @@ public class CommunityService {
         commentRepository.delete(comment);
     }
 
-    @Transactional
-    public String organizeMeeting(MeetingDto meetingDto) {
-        Board board = boardRepository.findById(meetingDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("보드를 찾을 수 없습니다."));
-
-        Meeting meeting = new Meeting();
-        meeting.setBoard(board);
-        meeting.setTopic(meetingDto.getTopic());
-        meeting.setTime(meetingDto.getTime());
-        meetingRepository.save(meeting);
-        return "모임 '" + meetingDto.getTopic() + "'이(가) 생성되었습니다.";
+    private PostDto convertPostToDto(Post post) {
+        PostDto dto = new PostDto();
+        dto.setId(post.getId());
+        dto.setBoardId(post.getBoard().getId());
+        dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
+        dto.setImage(post.getImage());
+        dto.setAuthorNickname(post.getAuthor().getNickname());
+        dto.setCreatedAt(post.getCreatedAt());
+        dto.setUpdatedAt(post.getUpdatedAt());
+        dto.setStateId(post.getState().getId());
+        dto.setStateName(post.getState().getName());
+        dto.setLikesCount(post.getLikedBy().size());
+        dto.setLikedByCurrentUser(isCurrentUserLiked(post.getId()));
+        dto.setViews(post.getViews());
+        dto.setComments(post.getComments().stream().map(this::convertCommentToDto).collect(Collectors.toList()));
+        return dto;
     }
 
-    @Transactional
-    public String sharePlan(PlanSharingDto planDto) {
-        CommunityMember user = communityMemberRepository.findById(planDto.getUserId())
+    private CommentDto convertCommentToDto(Comment comment) {
+        CommentDto dto = new CommentDto();
+        dto.setId(comment.getId());
+        dto.setPostId(comment.getPost().getId());
+        dto.setAuthorNickname(comment.getAuthor().getNickname());
+        dto.setContent(comment.getContent());
+        dto.setCreatedAt(comment.getCreatedAt());
+        dto.setUpdatedAt(comment.getUpdatedAt());
+        dto.setParentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
+        dto.setReplies(comment.getReplies().stream().map(this::convertCommentToDto).collect(Collectors.toList()));
+        return dto;
+    }
+
+    private boolean isCurrentUserLiked(Long postId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        Member member = memberRepository.findByLoginId(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        Plan plan = new Plan();
-        plan.setUser(user);
-        plan.setDetails(planDto.getDetails());
-        plan.setVisitTime(planDto.getVisitTime());
-        planRepository.save(plan);
-        return "방문 계획 '" + planDto.getDetails() + "'이(가) 공유되었습니다.";
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return post.getLikedBy().contains(member);
     }
 
     @Transactional(readOnly = true)
-    public MeetingDto getMeeting(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new IllegalArgumentException("모임을 찾을 수 없습니다."));
-        return new MeetingDto(meeting.getBoard().getId(), meeting.getTopic(), meeting.getTime());
-    }
-
-    @Transactional(readOnly = true)
-    public PlanDto getPlan(Long planId) {
-        Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new IllegalArgumentException("계획을 찾을 수 없습니다."));
-        return new PlanDto(plan.getUser().getId(), plan.getDetails(), plan.getVisitTime());
+    public PostDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        post.incrementViews();
+        postRepository.save(post);
+        return convertPostToDto(post);
     }
 
     @Transactional
-    public String deleteMeeting(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new IllegalArgumentException("모임을 찾을 수 없습니다."));
-        meetingRepository.delete(meeting);
-        return "모임이 성공적으로 삭제되었습니다!";
-    }
+    public void toggleLike(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
-    @Transactional
-    public String deletePlan(Long planId) {
-        Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new IllegalArgumentException("계획을 찾을 수 없습니다."));
-        planRepository.delete(plan);
-        return "계획이 성공적으로 삭제되었습니다!";
-    }
-    @Transactional(readOnly = true)
-    public List<Meeting> getAllMeetingsByBoard(Long boardId) {
-        return meetingRepository.findByBoardId(boardId);
+        if (!post.addLike(member)) {
+            post.removeLike(member);
+        }
+        postRepository.save(post);
     }
 
     @Transactional(readOnly = true)
-    public List<Plan> getAllPlansByUser(Long userId) {
-        return planRepository.findByUserId(userId);
+    public List<PostDto> getPostsByKeyword(String keyword) {
+        return postRepository.searchByKeyword(keyword).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getPostsByBoardName(String boardName) {
-        return postRepository.findByBoardName(boardName);
-    }
-
-    @Transactional
-    public Board getBoardByName(String name) {
-        return boardRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Board not found with name: " + name));
+    public List<PostDto> getPostsByTitle(String title) {
+        return postRepository.findByTitleContaining(title).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getPostsForBoardAndRegion(Long boardId, String region) {
-        return postRepository.findByBoardIdAndRegion(boardId, region);
-    }
-
-    @Transactional
-    public Meeting organizeCommunityMeeting(MeetingDto meetingDto, String location) {
-        Board board = boardRepository.findById(meetingDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        Meeting meeting = new Meeting(board, meetingDto.getTopic(), meetingDto.getTime(), location);
-        meetingRepository.save(meeting);
-        return meeting;
+    public List<PostDto> getPostsByAuthorUsername(String username) {
+        return postRepository.findByAuthorUsername(username).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getPostsByAuthor(Long authorId) {
-        return postRepository.findByAuthorId(authorId);
+    public List<PostDto> getPostsByStateName(String stateName) {
+        return postRepository.findByStateName(stateName).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getPostsByBoard(Long boardId) {
-        return postRepository.findAllByBoardId(boardId);
+    public List<CommentDto> getCommentsByPostId(Long postId) {
+        return commentRepository.findByPostId(postId).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Post> searchPostsByContent(String keyword) {
-        return postRepository.searchByContent(keyword);
+    public List<CommentDto> getCommentsByAuthorUsername(String username) {
+        return commentRepository.findByAuthorUsername(username).stream().map(this::convertCommentToDto).collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public List<PostDto> getPostsByAuthorId(Long authorId) {
+        return postRepository.findByAuthorId(authorId).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public Optional<CommunityMember> getMemberWithFriends(Long memberId) {
-        return communityMemberRepository.findByIdWithFriends(memberId);
+    public List<PostDto> getPostsByStateId(Long stateId) {
+        return postRepository.findByStateId(stateId).stream().map(this::convertPostToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public Optional<CommunityMember> getMemberByUsername(String username) {
-        return communityMemberRepository.findByUsername(username);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Comment> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostId(postId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Board> getBoardsByAuthor(Long authorId) {
-        return boardRepository.findByPostsAuthorId(authorId);
+    public List<CommentDto> getCommentsByAuthorId(Long authorId) {
+        return commentRepository.findByAuthorId(authorId).stream().map(this::convertCommentToDto).collect(Collectors.toList());
     }
 }

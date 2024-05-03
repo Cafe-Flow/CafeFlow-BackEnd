@@ -18,4 +18,5 @@
         private Long cityId;
         private Long stateId;
         private Member.UserType userType;
+        private byte[] image;
     }

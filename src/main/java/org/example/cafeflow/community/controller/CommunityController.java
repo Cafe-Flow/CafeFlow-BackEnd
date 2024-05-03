@@ -1,107 +1,185 @@
 package org.example.cafeflow.community.controller;
 
-import org.example.cafeflow.community.domain.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.repository.MemberRepository;
+import org.example.cafeflow.Member.util.JwtTokenProvider;
+import org.example.cafeflow.Member.util.UserPrincipal;
 import org.example.cafeflow.community.dto.*;
 import org.example.cafeflow.community.service.CommunityService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/community")
 public class CommunityController {
 
-    @Autowired
-    private CommunityService communityService;
+    private final CommunityService communityService;
+    private final MemberRepository memberRepository;
 
-    @PostMapping("/friends/add")
-    public ResponseEntity<String> addFriend(@RequestBody FriendRequestDto request) {
-        return ResponseEntity.ok(communityService.addFriend(request));
+    private final JwtTokenProvider jwtTokenProvider;
+    public CommunityController(CommunityService communityService, JwtTokenProvider jwtTokenProvider,MemberRepository memberRepository) {
+        this.communityService = communityService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.memberRepository = memberRepository;
+    }
+    private UserPrincipal getCurrentUser(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String username = jwtTokenProvider.getUsername(token);
+            Member member = memberRepository.findByLoginId(username)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            return new UserPrincipal(member);
+        }
+        return null;
     }
 
-    @PostMapping("/posts")
-    public ResponseEntity<Post> createPost(@RequestBody PostCreationDto dto) {
-        Post post = communityService.createPost(dto);
-        return ResponseEntity.ok(post);
+    @PostMapping(value = "/posts", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createPost(HttpServletRequest request,
+                                        @RequestParam("boardId") Long boardId,
+                                        @RequestParam("title") String title,
+                                        @RequestParam("content") String content,
+                                        @RequestParam("stateId") Long stateId,
+                                        @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        UserPrincipal currentUser = getCurrentUser(request);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        PostCreationDto creationDto = new PostCreationDto(boardId, currentUser.getId(), currentUser.getNickname(), title, content, image, stateId);
+        try {
+            PostDto postDto = communityService.createPost(creationDto,image);
+            return new ResponseEntity<>(postDto, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 처리 중 오류가 발생했습니다.");
+        }
+    }
+    @PutMapping("/posts/{id}")
+    public ResponseEntity<?> updatePost(@PathVariable("id") Long id,
+                                        @Valid @ModelAttribute PostUpdateDto updateDto) {
+        try {
+            PostDto postDto = communityService.updatePost(id, updateDto);
+            return ResponseEntity.ok(postDto);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 처리 중 오류가 발생했습니다.");
+        }
     }
 
+    @PostMapping("/posts/{postId}/like")
+    public ResponseEntity<Void> toggleLike(@PathVariable("postId") Long postId, HttpServletRequest request) {
+        UserPrincipal currentUser = getCurrentUser(request);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody PostUpdateDto dto) {
-        return ResponseEntity.ok(communityService.updatePost(postId, dto));
+        communityService.toggleLike(postId, currentUser.getId());
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
-        communityService.deletePost(postId);
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable("id") Long id) {
+        communityService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/comments")
-    public ResponseEntity<Comment> addComment(@RequestBody CommentCreationDto dto) {
-        return ResponseEntity.ok(communityService.addComment(dto));
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getAllPosts() {
+        List<PostDto> posts = communityService.getAllPosts();
+        return ResponseEntity.ok(posts);
     }
 
-    @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        communityService.deleteComment(commentId);
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable("id") Long id) {
+        PostDto postDto = communityService.getPostById(id);
+        return ResponseEntity.ok(postDto);
+    }
+
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<CommentDto> addCommentToPost(@PathVariable("postId") Long postId, @RequestBody CommentCreationDto creationDto, HttpServletRequest request) {
+        UserPrincipal currentUser = getCurrentUser(request);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        creationDto.setPostId(postId);
+        creationDto.setAuthorId(currentUser.getId());
+        CommentDto commentDto = communityService.createComment(creationDto);
+        return new ResponseEntity<>(commentDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/replies")
+    public ResponseEntity<CommentDto> addReplyToComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody CommentCreationDto creationDto, HttpServletRequest request) {
+        UserPrincipal currentUser = getCurrentUser(request);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        creationDto.setPostId(postId);
+        creationDto.setParentCommentId(commentId);
+        creationDto.setAuthorId(currentUser.getId());
+        CommentDto commentDto = communityService.createReply(commentId, creationDto);
+        return new ResponseEntity<>(commentDto, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/comments/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable(("id")) Long id) {
+        communityService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/posts/{boardId}/{region}")
-    public ResponseEntity<List<Post>> getRegionalPosts(@PathVariable Long boardId, @PathVariable String region) {
-        List<Post> posts = communityService.getPostsForBoardAndRegion(boardId, region);
-        return ResponseEntity.ok(posts);
-    }
 
-    @PostMapping("/meetings")
-    public ResponseEntity<Meeting> createMeeting(@RequestBody MeetingDto meetingDto, @RequestParam String location) {
-        Meeting meeting = communityService.organizeCommunityMeeting(meetingDto, location);
-        return ResponseEntity.ok(meeting);
-    }
-
-    @GetMapping("/posts/author/{authorId}")
-    public ResponseEntity<List<Post>> getPostsByAuthor(@PathVariable Long authorId) {
-        List<Post> posts = communityService.getPostsByAuthor(authorId);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/posts/board/{boardId}")
-    public ResponseEntity<List<Post>> getPostsByBoard(@PathVariable Long boardId) {
-        List<Post> posts = communityService.getPostsByBoard(boardId);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/posts/search")
-    public ResponseEntity<List<Post>> searchPosts(@RequestParam String keyword) {
-        List<Post> posts = communityService.searchPostsByContent(keyword);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/members/{memberId}/friends")
-    public ResponseEntity<CommunityMember> getMemberWithFriends(@PathVariable Long memberId) {
-        return communityService.getMemberWithFriends(memberId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/members/username/{username}")
-    public ResponseEntity<CommunityMember> getMemberByUsername(@PathVariable String username) {
-        return communityService.getMemberByUsername(username)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/comments/post/{postId}")
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
-        List<Comment> comments = communityService.getCommentsByPost(postId);
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<List<CommentDto>> getCommentsByPostId(@PathVariable("postId") Long postId) {
+        List<CommentDto> comments = communityService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
 
-    @GetMapping("/boards/author/{authorId}")
-    public ResponseEntity<List<Board>> getBoardsByAuthor(@PathVariable Long authorId) {
-        List<Board> boards = communityService.getBoardsByAuthor(authorId);
-        return ResponseEntity.ok(boards);
+    @GetMapping("/posts/author/{authorId}")
+    public ResponseEntity<List<PostDto>> getPostsByAuthorId(@PathVariable("authorId") Long authorId) {
+        List<PostDto> posts = communityService.getPostsByAuthorId(authorId);
+        return ResponseEntity.ok(posts);
     }
+
+    @GetMapping("/posts/state/{stateId}")
+    public ResponseEntity<List<PostDto>> getPostsByStateId(@PathVariable("stateId") Long stateId) {
+        List<PostDto> posts = communityService.getPostsByStateId(stateId);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/comments/author/{authorId}")
+    public ResponseEntity<List<CommentDto>> getCommentsByAuthorId(@PathVariable("authorId") Long authorId) {
+        List<CommentDto> comments = communityService.getCommentsByAuthorId(authorId);
+        return ResponseEntity.ok(comments);
+    }
+    @GetMapping("/posts/search")
+    public ResponseEntity<List<PostDto>> getPostsByKeyword(@RequestParam String keyword) {
+        List<PostDto> posts = communityService.getPostsByKeyword(keyword);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/posts/title")
+    public ResponseEntity<List<PostDto>> getPostsByTitle(@RequestParam String title) {
+        List<PostDto> posts = communityService.getPostsByTitle(title);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/posts/author/username")
+    public ResponseEntity<List<PostDto>> getPostsByAuthorUsername(@RequestParam String username) {
+        List<PostDto> posts = communityService.getPostsByAuthorUsername(username);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/posts/state/name")
+    public ResponseEntity<List<PostDto>> getPostsByStateName(@RequestParam String stateName) {
+        List<PostDto> posts = communityService.getPostsByStateName(stateName);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/comments/author/username")
+    public ResponseEntity<List<CommentDto>> getCommentsByAuthorUsername(@RequestParam String username) {
+        List<CommentDto> comments = communityService.getCommentsByAuthorUsername(username);
+        return ResponseEntity.ok(comments);
+    }
+
 }
