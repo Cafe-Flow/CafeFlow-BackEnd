@@ -32,7 +32,7 @@ public class Post {
     private String content;
 
     @Lob
-    @Column(nullable = true)
+    @Column(name = "image", columnDefinition="LONGBLOB",nullable = true)
     private byte[] image;
 
     @ManyToOne

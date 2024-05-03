@@ -25,6 +25,11 @@ public class Comment {
     @JoinColumn(name = "member_id", nullable = false)
     private Member author;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+
     @Lob
     @Column(nullable = false)
     private String content;

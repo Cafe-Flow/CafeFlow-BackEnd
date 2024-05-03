@@ -87,17 +87,43 @@ public class CommunityService {
     public CommentDto createComment(CommentCreationDto creationDto) {
         Post post = postRepository.findById(creationDto.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        Member member = memberRepository.findById(1L)  // This should be dynamically fetched based on authenticated user
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Comment parentComment = null;
+        if (creationDto.getParentCommentId() != null) {
+            parentComment = commentRepository.findById(creationDto.getParentCommentId())
+                    .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다."));
+        }
+
+        Comment comment = new Comment();
+        comment.setPost(post);
+        comment.setAuthor(member);
+        comment.setContent(creationDto.getContent());
+        comment.setParentComment(parentComment);
+
+        comment = commentRepository.save(comment);
+        return convertToDto(comment);
+    }
+    @Transactional
+    public CommentDto createReply(Long parentCommentId, CommentCreationDto creationDto) {
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(creationDto.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setAuthor(member);
         comment.setContent(creationDto.getContent());
+        comment.setParentComment(parentComment);
 
         comment = commentRepository.save(comment);
         return convertToDto(comment);
     }
+
+
 
     @Transactional
     public void deleteComment(Long commentId) {
@@ -130,6 +156,13 @@ public class CommunityService {
         dto.setUpdatedAt(comment.getUpdatedAt());
         return dto;
     }
+    @Transactional(readOnly = true)
+    public PostDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return convertToDto(post);
+    }
+
 
     @Transactional(readOnly = true)
     public List<PostDto> getPostsByKeyword(String keyword) {
