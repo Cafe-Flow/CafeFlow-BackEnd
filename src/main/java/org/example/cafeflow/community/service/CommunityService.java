@@ -84,8 +84,19 @@ public class CommunityService {
     public void deletePost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (post.getBoard() != null) {
+            Board board = post.getBoard();
+            board.getPosts().remove(post);
+            boardRepository.save(board);
+        }
+
+        commentRepository.deleteAll(post.getComments());
+        post.getLikedBy().clear();
+
         postRepository.delete(post);
     }
+
 
     @Transactional(readOnly = true)
     public List<PostDto> getAllPosts() {
