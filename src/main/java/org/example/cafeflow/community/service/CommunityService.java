@@ -100,7 +100,7 @@ public class CommunityService {
 
     @Transactional(readOnly = true)
     public List<PostDto> getAllPosts() {
-        return postRepository.findAll().stream()
+        return postRepository.findAllPosts().stream()
                 .map(this::convertPostToDto)
                 .collect(Collectors.toList());
     }
