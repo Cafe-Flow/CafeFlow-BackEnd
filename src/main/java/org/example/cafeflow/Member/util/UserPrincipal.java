@@ -3,6 +3,7 @@ package org.example.cafeflow.Member.util;
 import lombok.Getter;
 import org.example.cafeflow.Member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -15,6 +16,7 @@ public class UserPrincipal implements UserDetails {
     private final String username;
     private final String password;
     private final String nickname;
+    private final Member.UserType userType;
 
     // 생성자 추가
     public UserPrincipal(Member member) {
@@ -22,12 +24,17 @@ public class UserPrincipal implements UserDetails {
         this.username = member.getLoginId();
         this.password = member.getPasswordHash();
         this.nickname = member.getNickname();
+        this.userType = member.getUserType();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 권한 정보를 반환해야 하지만 현재는 빈 Collection을 반환합니다.
-        return Collections.emptyList();
+        // UserType에 따라 다른 권한 부여
+        if (userType == Member.UserType.ADMIN) {
+            return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
     @Override
