@@ -1,33 +1,21 @@
-server:
-  port: 8080
-
 spring:
   security:
     user:
       name: admin
       password: 2527
-
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://kit.clqqii6k21l4.ap-northeast-2.rds.amazonaws.com:3306/cafe-flow
-    username: admin
-    password: dhfpswl0923
-  ssh:
-    remote_jump_host: 3.39.150.38
-    user: ubuntu
-    private_key: "C:\\workspace\\downloads\\keys\\my-ec2-keypair.pem"
-    database_port: 3306
-
+    url: jdbc:mariadb://svc.sel5.cloudtype.app:32319/cafe-flow
+    username: root
+    password: 2527
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-
 logging:
   level:
     root: INFO
     org.springframework.web: DEBUG
-
 
 app:
   jwt:
