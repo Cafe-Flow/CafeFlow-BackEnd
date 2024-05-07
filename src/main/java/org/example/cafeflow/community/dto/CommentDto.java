@@ -14,6 +14,7 @@ public class CommentDto {
     private Long id;
     private Long postId;
     private String authorNickname;
+    private byte[] authorImage;
     private Long parentCommentId;
     private String content;
     private LocalDateTime createdAt;
