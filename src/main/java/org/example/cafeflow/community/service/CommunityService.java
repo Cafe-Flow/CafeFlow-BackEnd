@@ -194,7 +194,7 @@ public class CommunityService {
         return post.getLikedBy().contains(member);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDto getPostById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
