@@ -1,6 +1,9 @@
 package org.example.cafeflow.community.repository;
 
 import org.example.cafeflow.community.domain.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +13,9 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByAuthorId(Long authorId);
     List<Post> findByBoardId(Long boardId);
+    @EntityGraph(attributePaths = {"author", "board", "comments", "likedBy"})
+    @Query("SELECT p FROM Post p")
+    List<Post> findAllPosts();
 
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword%")
         List<Post> searchByKeyword(@Param("keyword") String keyword);
