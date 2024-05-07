@@ -159,6 +159,7 @@ public class CommunityService {
         dto.setContent(post.getContent());
         dto.setImage(post.getImage());
         dto.setAuthorNickname(post.getAuthor().getNickname());
+        dto.setAuthorImage(post.getAuthor().getImage());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setUpdatedAt(post.getUpdatedAt());
         dto.setStateId(post.getState().getId());
@@ -176,6 +177,7 @@ public class CommunityService {
         dto.setId(comment.getId());
         dto.setPostId(comment.getPost().getId());
         dto.setAuthorNickname(comment.getAuthor().getNickname());
+        dto.setAuthorImage(comment.getAuthor().getImage());
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
         dto.setUpdatedAt(comment.getUpdatedAt());

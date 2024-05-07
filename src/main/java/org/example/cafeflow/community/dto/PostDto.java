@@ -17,6 +17,7 @@ public class PostDto {
     private String content;
     private byte[] image;
     private String authorNickname;
+    private byte[] authorImage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentDto> comments;
