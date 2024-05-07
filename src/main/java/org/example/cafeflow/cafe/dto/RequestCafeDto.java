@@ -19,6 +19,8 @@ public class RequestCafeDto {
 
     private String description;
 
+    private int mapx;
+    private int mapy;
 
     public Cafe toEntity() {
         LocalDateTime time = LocalDateTime.now();
@@ -27,6 +29,8 @@ public class RequestCafeDto {
                 .address(address)
                 .reviewsCount(0)
                 .description(description)
+                .mapx(mapx)
+                .mapy(mapy)
                 .createdAt(time)
                 .updatedAt(time)
                 .build();

@@ -49,6 +49,8 @@ public class CafeService {
                         .name(c.getName())
                         .reviewsRating(c.getReviewsRating())
                         .reviewCount(c.getReviewsCount())
+                        .mapx(c.getMapx())
+                        .mapy(c.getMapy())
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -62,6 +64,8 @@ public class CafeService {
         cafe.updateCafe(cafeDto.getName(),
                         cafeDto.getAddress(),
                         cafeDto.getDescription(),
+                        cafeDto.getMapx(),
+                        cafeDto.getMapy(),
                         updatedAt
         );
     }
@@ -96,6 +100,8 @@ public class CafeService {
                 .reviewCount(cafe.getReviewsCount())
                 .reviewsRating(cafe.getReviewsRating())
                 .description(cafe.getDescription())
+                .mapy(cafe.getMapy())
+                .mapy(cafe.getMapy())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();
