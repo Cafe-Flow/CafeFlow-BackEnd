@@ -19,18 +19,21 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, double reviewsRating, int reviewsCount, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.member = member;
+        this.reviews = reviews;
+        this.seats = seats;
         this.reviewsRating = reviewsRating;
         this.reviewsCount = reviewsCount;
         this.description = description;
+        this.mapx = mapx;
+        this.mapy = mapy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +60,8 @@ public class Cafe {
     private int reviewsCount;
 
     private String description;
+    private int mapx;
+    private int mapy;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -65,10 +70,12 @@ public class Cafe {
     private LocalDateTime updatedAt;
 
     //카페 정보 수정
-    public void updateCafe(String name, String address, String description, LocalDateTime updatedAt) {
+    public void updateCafe(String name, String address, String description, int mapx, int mapy, LocalDateTime updatedAt) {
         this.name = name;
         this.address = address;
         this.description = description;
+        this.mapx = mapx;
+        this.mapy = mapy;
         this.updatedAt = updatedAt;
     }
 
