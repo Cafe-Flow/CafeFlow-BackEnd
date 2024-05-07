@@ -16,7 +16,6 @@ public class ResponseCafeDto {
     private int reviewCount;
     private double reviewsRating;
     private String description;
-    private String region;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

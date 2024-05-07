@@ -47,8 +47,10 @@ public class Review {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
+
     public void registerdReviewToCafe(Cafe cafe) {
-        cafe.addReview(this);
         this.cafe = cafe;
+        cafe.addReview(this);
     }
 }

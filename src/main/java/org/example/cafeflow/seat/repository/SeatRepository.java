@@ -2,6 +2,7 @@ package org.example.cafeflow.seat.repository;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
 import org.springframework.stereotype.Repository;
@@ -21,8 +22,15 @@ public class SeatRepository {
         return em.find(Seat.class, id);
     }
 
-    public List<Seat> findAll() {
-        return em.createQuery("select r from Seat s", Seat.class)
+    public List<Seat> findAll(Long cafeId) {
+        return em.createQuery("select s from Seat s where s.cafe.id = :cafe_id", Seat.class)
+                .setParameter("cafe_id", cafeId)
                 .getResultList();
+    }
+
+    public void removeAll(Long cafeId) {
+        em.createQuery("delete from Seat s where s.cafe.id = :cafe_id")
+                .setParameter("cafe_id", cafeId)
+                .executeUpdate();
     }
 }

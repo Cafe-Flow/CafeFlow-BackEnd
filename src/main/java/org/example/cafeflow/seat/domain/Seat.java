@@ -13,14 +13,16 @@ import org.example.cafeflow.cafe.domain.Cafe;
 public class Seat {
 
     @Builder
-    public Seat(Long id, Cafe cafe, SeatStatus seatStatus, SeatHasPlug seatHasPlug, SeatCoordinates coordinates) {
+    public Seat(Long id, Cafe cafe, SeatStatus seatStatus, Boolean seatHasPlug, int seatSize, int seatNumber, SeatAngle seatAngle, SeatCoordinates seatCoordinates) {
         this.id = id;
         this.cafe = cafe;
-        this.seatStatus = seatStatus;
+        this.seatStatus = (seatStatus == null) ? SeatStatus.AVAILABLE : seatStatus;
         this.seatHasPlug = seatHasPlug;
-        this.coordinates = coordinates;
+        this.seatSize = seatSize;
+        this.seatNumber = seatNumber;
+        this.seatAngle = seatAngle;
+        this.seatCoordinates = seatCoordinates;
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id")
@@ -33,9 +35,17 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus seatStatus;
 
+    private Boolean seatHasPlug;
+    private int seatSize;
+    private int seatNumber;
     @Enumerated(EnumType.STRING)
-    private SeatHasPlug seatHasPlug;
-
+    private SeatAngle seatAngle;
     @Embedded
-    private SeatCoordinates coordinates;
+    private SeatCoordinates seatCoordinates;
+
+
+    public void registerSeatToCafe(Cafe cafe) {
+        this.cafe = cafe;
+        cafe.addSeat(this);
+    }
 }

@@ -62,7 +62,6 @@ public class CafeService {
         cafe.updateCafe(cafeDto.getName(),
                         cafeDto.getAddress(),
                         cafeDto.getDescription(),
-                        cafeDto.getRegion(),
                         updatedAt
         );
     }
@@ -97,7 +96,6 @@ public class CafeService {
                 .reviewCount(cafe.getReviewsCount())
                 .reviewsRating(cafe.getReviewsRating())
                 .description(cafe.getDescription())
-                .region(cafe.getRegion())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();
