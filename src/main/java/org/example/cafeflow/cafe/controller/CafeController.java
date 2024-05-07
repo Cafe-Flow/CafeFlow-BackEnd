@@ -1,12 +1,18 @@
 package org.example.cafeflow.cafe.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.repository.MemberRepository;
+import org.example.cafeflow.Member.util.JwtTokenProvider;
+import org.example.cafeflow.Member.util.UserPrincipal;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.service.CafeService;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,11 +28,26 @@ public class CafeController {
 
     private final CafeService cafeService;
 
+    private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    //JWT
+    private UserPrincipal getCurrentUser(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String username = jwtTokenProvider.getUsername(token);
+            Member member = memberRepository.findByLoginId(username)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            return new UserPrincipal(member);
+        }
+        return null;
+    }
 
     //카페 등록(직접 작성 + 네이버 연동한거 이쪽으로 보내기)
     @PostMapping("/api/register-cafe")
-    public Long joinCafe(@Valid @RequestBody RequestCafeDto cafeDto) {
-        Long cafeId = cafeService.join(cafeDto);
+    //@PreAuthorize("hasAuthority('ROLE_ADMIN')") //관리자 인지아닌지
+    public Long joinCafe(HttpServletRequest request, @Valid @RequestBody RequestCafeDto cafeDto) {
+        UserPrincipal currentUser = getCurrentUser(request);
+        Long cafeId = cafeService.join(cafeDto, currentUser.getId());
         return cafeId;
     }
 

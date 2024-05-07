@@ -1,6 +1,8 @@
 package org.example.cafeflow.cafe.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +20,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class CafeService {
     private final CafeRepository cafeRepository;
+    private final MemberRepository memberRepository;
 
-    public Long join(RequestCafeDto cafeDto) {
+    public Long join(RequestCafeDto cafeDto, Long userId) {
         Cafe cafe = cafeDto.toEntity();
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        cafe.registerUser(member);
         cafeRepository.save(cafe);
-
         return cafe.getId();
     }
 
