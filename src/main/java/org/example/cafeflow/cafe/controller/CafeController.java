@@ -44,7 +44,6 @@ public class CafeController {
 
     //카페 등록(직접 작성 + 네이버 연동한거 이쪽으로 보내기)
     @PostMapping("/api/register-cafe")
-    //@PreAuthorize("hasAuthority('ROLE_ADMIN')") //관리자 인지아닌지
     public Long joinCafe(HttpServletRequest request, @Valid @RequestBody RequestCafeDto cafeDto) {
         UserPrincipal currentUser = getCurrentUser(request);
         Long cafeId = cafeService.join(cafeDto, currentUser.getId());
