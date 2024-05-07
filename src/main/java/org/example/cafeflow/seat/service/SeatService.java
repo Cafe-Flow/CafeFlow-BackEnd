@@ -41,6 +41,7 @@ public class SeatService {
             .map(s -> ResponseSeatDto.builder()
                     .id(s.getId())
                     .seatHasPlug(s.getSeatHasPlug())
+                    .seatStatus(s.getSeatStatus())
                     .seatSize(s.getSeatSize())
                     .seatNumber(s.getSeatNumber())
                     .seatAngle(s.getSeatAngle())

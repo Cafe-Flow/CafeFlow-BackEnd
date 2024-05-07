@@ -19,7 +19,7 @@ public class SeatWebsocketController {
     //WebSocket
     @MessageMapping("/cafe/{cafeId}/seat") //  -> /app/cafe/1/seat
     @SendTo("/topic/cafe/{cafeId}/seat")
-    public SeatStatusDto seatStatus(@DestinationVariable("cafeId") Long cafeId, SeatStatusDto seatStatus) {
-        return seatStatus;
+    public SeatStatusDto seatStatus(@DestinationVariable("cafeId") Long cafeId, SeatStatusDto seatStatusDto) {
+        return seatStatusDto;
     }
 }

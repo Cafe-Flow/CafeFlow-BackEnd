@@ -16,7 +16,7 @@ public class Seat {
     public Seat(Long id, Cafe cafe, SeatStatus seatStatus, Boolean seatHasPlug, int seatSize, int seatNumber, SeatAngle seatAngle, SeatCoordinates seatCoordinates) {
         this.id = id;
         this.cafe = cafe;
-        this.seatStatus = seatStatus;
+        this.seatStatus = (seatStatus == null) ? SeatStatus.AVAILABLE : seatStatus;
         this.seatHasPlug = seatHasPlug;
         this.seatSize = seatSize;
         this.seatNumber = seatNumber;

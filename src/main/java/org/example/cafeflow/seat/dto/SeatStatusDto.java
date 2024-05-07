@@ -12,5 +12,4 @@ import org.example.cafeflow.seat.domain.SeatStatus;
 public class SeatStatusDto { //websocket 용
     private SeatStatus seatStatus;
     private int seatNumber;
-
 }
