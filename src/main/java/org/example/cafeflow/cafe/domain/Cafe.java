@@ -94,6 +94,9 @@ public class Cafe {
     public void addSeat(Seat seat) {
         seats.add(seat);
     }
+    public void registerUser(Member member) {
+        this.member = member;
+    }
 
     public void removeAllSeat() {
         seats.clear();
