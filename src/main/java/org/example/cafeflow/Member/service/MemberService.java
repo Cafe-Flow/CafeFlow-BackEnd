@@ -9,6 +9,10 @@ import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.Member.repository.StateRepository;
 import org.example.cafeflow.Member.util.JwtTokenProvider;
 import org.example.cafeflow.cafe.repository.CafeRepository;
+import org.example.cafeflow.community.domain.Comment;
+import org.example.cafeflow.community.domain.Post;
+import org.example.cafeflow.community.repository.CommentRepository;
+import org.example.cafeflow.community.repository.PostRepository;
 import org.example.cafeflow.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +37,10 @@ public class MemberService {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private CafeRepository cafeRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public TokenDto registerMember(MemberRegistrationDto registrationDto) {
         validateRegistration(registrationDto);
@@ -180,7 +188,7 @@ public class MemberService {
         Member.UserType userType = jwtTokenProvider.getUserTypeFromToken(token);
         return userType == Member.UserType.ADMIN;
     }
-    //--형준 수정--//
+
     @Transactional
     public void deleteMember(Long id, String username) {
         Member member = memberRepository.findById(id)
@@ -188,12 +196,33 @@ public class MemberService {
         if (!member.getLoginId().equals(username) && !member.getUserType().equals(Member.UserType.ADMIN)) {
             throw new UnauthorizedAccessException("삭제 권한이 없습니다.");
         }
-        List<Long> cafeIdList = cafeRepository.findByUserId(id);
-        for (Long i : cafeIdList) {
-            cafeRepository.delete(i);
+
+        // 해당 회원이 작성한 댓글 삭제
+        List<Comment> comments = commentRepository.findByAuthorId(id);
+        commentRepository.deleteAll(comments);  // JPA의 deleteAll 사용하여 일괄 삭제
+
+        // 해당 회원이 좋아한 게시글의 좋아요 목록에서 해당 회원 제거
+        List<Post> likedPosts = postRepository.findAllByLikedById(id);
+        for (Post post : likedPosts) {
+            post.getLikedBy().remove(member);
+            postRepository.save(post);  // 변경사항 저장
         }
+
+        // 회원이 작성한 게시글 삭제
+        List<Post> posts = postRepository.findByAuthorId(id);
+        posts.forEach(post -> {
+            commentRepository.deleteByPostId(post.getId());  // 해당 게시글의 모든 댓글 삭제
+            postRepository.delete(post);                     // 게시글 삭제
+        });
+
+        // 카페 정보 삭제
+        List<Long> cafeIdList = cafeRepository.findByUserId(id);
+        cafeIdList.forEach(cafeRepository::delete);
+
+        // 마지막으로 회원 정보 삭제
         memberRepository.deleteById(id);
     }
+
 
     public void changeMemberPassword(Long memberId, String currentPassword, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
