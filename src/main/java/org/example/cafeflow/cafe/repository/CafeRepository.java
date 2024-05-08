@@ -4,9 +4,9 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,6 +25,16 @@ public class CafeRepository {
 
     public Cafe findById(Long id) {
         return em.find(Cafe.class, id);
+    }
+
+    public List<Long> findByUserId(Long userId) {
+        List<Cafe> cafes = em.createQuery("select c from Cafe c where c.member.id = :id", Cafe.class)
+                .setParameter("id", userId)
+                .getResultList();
+       return cafes.stream()
+                .map(c -> c.getId())
+                .collect(Collectors.toList());
+
     }
 
     public List<Cafe> findAll() {

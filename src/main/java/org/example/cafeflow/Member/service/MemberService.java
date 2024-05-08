@@ -8,10 +8,12 @@ import org.example.cafeflow.Member.repository.CityRepository;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.Member.repository.StateRepository;
 import org.example.cafeflow.Member.util.JwtTokenProvider;
+import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.example.cafeflow.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +31,8 @@ public class MemberService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private CafeRepository cafeRepository;
 
     public TokenDto registerMember(MemberRegistrationDto registrationDto) {
         validateRegistration(registrationDto);
@@ -176,12 +180,17 @@ public class MemberService {
         Member.UserType userType = jwtTokenProvider.getUserTypeFromToken(token);
         return userType == Member.UserType.ADMIN;
     }
-
+    //--형준 수정--//
+    @Transactional
     public void deleteMember(Long id, String username) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("회원을 찾을 수 없습니다: " + id));
         if (!member.getLoginId().equals(username) && !member.getUserType().equals(Member.UserType.ADMIN)) {
             throw new UnauthorizedAccessException("삭제 권한이 없습니다.");
+        }
+        List<Long> cafeIdList = cafeRepository.findByUserId(id);
+        for (Long i : cafeIdList) {
+            cafeRepository.delete(i);
         }
         memberRepository.deleteById(id);
     }
@@ -201,6 +210,5 @@ public class MemberService {
         member.setPasswordHash(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
     }
-
 
 }
