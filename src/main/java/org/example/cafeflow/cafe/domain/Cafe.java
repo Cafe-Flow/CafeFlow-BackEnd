@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
+import org.example.cafeflow.seat.dto.UseSeat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +55,9 @@ public class Cafe {
     @OneToMany(mappedBy = "cafe", cascade = CascadeType.REMOVE)
     private List<Seat> seats = new ArrayList<>();
 
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.REMOVE)
+    private List<UseSeat> useSeats = new ArrayList<>();
+
     @Column(name = "reviews_rating")
     private double reviewsRating;
 
@@ -62,6 +66,8 @@ public class Cafe {
     private String description;
     private int mapx;
     private int mapy;
+    @Column(name = "wating_time")
+    private int watingTime;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
