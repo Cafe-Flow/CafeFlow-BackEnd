@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
-import org.example.cafeflow.seat.dto.UseSeat;
+import org.example.cafeflow.seat.domain.UseSeat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, int watingTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -32,6 +32,7 @@ public class Cafe {
         this.description = description;
         this.mapx = mapx;
         this.mapy = mapy;
+        this.watingTime = watingTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

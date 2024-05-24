@@ -1,4 +1,4 @@
-package org.example.cafeflow.seat.dto;
+package org.example.cafeflow.seat.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -2,8 +2,7 @@ package org.example.cafeflow.seat.repository;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.example.cafeflow.cafe.domain.Cafe;
-import org.example.cafeflow.seat.dto.UseSeat;
+import org.example.cafeflow.seat.domain.UseSeat;
 import org.springframework.stereotype.Repository;
 
 @Repository
