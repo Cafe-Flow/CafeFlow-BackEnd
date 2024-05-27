@@ -20,7 +20,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, int watingTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, Integer watingTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -68,7 +68,7 @@ public class Cafe {
     private int mapx;
     private int mapy;
     @Column(name = "wating_time")
-    private int watingTime;
+    private Integer watingTime;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

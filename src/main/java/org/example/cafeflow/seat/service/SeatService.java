@@ -71,29 +71,29 @@ public class SeatService {
         System.out.println("seatNumber = " + seat.getSeatNumber());
         seat.changeSeatStatus(seatStatusDto.getSeatStatus());//좌석 상태 변경
 
-//        if (seatStatusDto.getSeatStatus() == SeatStatus.AVAILABLE) {
-//            //2. 앉아있던 사람이 나왔으니 좌석번호를 이용해 DB조회 후 시간과 현재시간을 연산하여 앉아있던 시간 계산
-//            UseSeat useSeat = useSeatRepository.findBySeatNumber(seatStatusDto.getSeatNumber());
-//            String availableTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd:HH:mm"));
-//            String occupiedTime = useSeat.getUseAt();
+        if (seatStatusDto.getSeatStatus() == SeatStatus.AVAILABLE) {
+            //2. 앉아있던 사람이 나왔으니 좌석번호를 이용해 DB조회 후 시간과 현재시간을 연산하여 앉아있던 시간 계산
+            UseSeat useSeat = useSeatRepository.findBySeatNumber(seatStatusDto.getSeatNumber());
+            String availableTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd:HH:mm"));
+            String occupiedTime = useSeat.getUseAt();
+
+//            if (!occupiedTime.split(":")[0].equals(availableTime.split(":")[0])) { //날짜가 바뀌었다면
+//                    int watingTime =
+//            } else{ //날짜가 그대로라면
 //
-////            if (!occupiedTime.split(":")[0].equals(availableTime.split(":")[0])) { //날짜가 바뀌었다면
-////                    int watingTime =
-////            } else{ //날짜가 그대로라면
-////
-////            }
-//
-//        } else if (seatStatusDto.getSeatStatus() == SeatStatus.RESERVED) {
-//
-//        } else { //OCCUPIED
-//            //1. 사람이 앉았으니 현재시간과 좌석번호를 DB에 저장 -> 일:시:분
-//            String occupiedTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd:HH:mm"));
-//            UseSeat useSeat = UseSeat.builder()
-//                            .cafe(cafe)
-//                            .useAt(occupiedTime)
-//                            .seatNumber(seatStatusDto.getSeatNumber())
-//                            .build();
-//            useSeatRepository.save(useSeat);
-//        }
+//            }
+
+        } else if (seatStatusDto.getSeatStatus() == SeatStatus.RESERVED) {
+
+        } else { //OCCUPIED
+            //1. 사람이 앉았으니 현재시간과 좌석번호를 DB에 저장 -> 일:시:분
+            String occupiedTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd:HH:mm"));
+            UseSeat useSeat = UseSeat.builder()
+                            .cafe(cafe)
+                            .useAt(occupiedTime)
+                            .seatNumber(seatStatusDto.getSeatNumber())
+                            .build();
+            useSeatRepository.save(useSeat);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class ResponseCafeDto {
     private String description;
     private int mapx;
     private int mapy;
-    private int watingTime;
+    private Integer watingTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -11,7 +11,11 @@ import org.example.cafeflow.Member.util.UserPrincipal;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.service.CafeService;
+import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.springframework.http.*;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -101,4 +105,6 @@ public class CafeController {
     public void deleteCafe(@PathVariable("cafe_id") Long cafeId) {
         cafeService.deleteCafe(cafeId);
     }
+
+    //카페 혼잡도 웹소켓
 }

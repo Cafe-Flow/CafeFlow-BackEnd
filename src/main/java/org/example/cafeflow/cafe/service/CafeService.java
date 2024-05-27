@@ -57,6 +57,7 @@ public class CafeService {
                         .reviewCount(c.getReviewsCount())
                         .mapx(c.getMapx())
                         .mapy(c.getMapy())
+                        .watingTime(c.getWatingTime())
                         .build()
                 )
                 .collect(Collectors.toList());
