@@ -8,8 +8,10 @@ import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.Member.util.JwtTokenProvider;
 import org.example.cafeflow.Member.util.UserPrincipal;
+import org.example.cafeflow.cafe.domain.Traffic;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
+import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.service.CafeService;
 import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.springframework.http.*;
@@ -48,7 +50,7 @@ public class CafeController {
 
     //카페 등록(직접 작성 + 네이버 연동한거 이쪽으로 보내기)
     @PostMapping("/api/register-cafe")
-    public Long joinCafe(HttpServletRequest request, @Valid @RequestBody RequestCafeDto cafeDto) {
+    public Long joinCafe(HttpServletRequest request, @Valid @ModelAttribute RequestCafeDto cafeDto) {
         UserPrincipal currentUser = getCurrentUser(request);
         Long cafeId = cafeService.join(cafeDto, currentUser.getId());
         return cafeId;
@@ -100,11 +102,11 @@ public class CafeController {
         cafeService.updateCafe(cafeId, cafeDto);
     }
 
+
     //카페 정보 삭제
     @DeleteMapping("/api/cafe/{cafe_id}")
     public void deleteCafe(@PathVariable("cafe_id") Long cafeId) {
         cafeService.deleteCafe(cafeId);
     }
 
-    //카페 혼잡도 웹소켓
 }

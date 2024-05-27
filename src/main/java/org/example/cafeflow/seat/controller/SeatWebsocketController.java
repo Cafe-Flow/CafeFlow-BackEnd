@@ -1,6 +1,8 @@
 package org.example.cafeflow.seat.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.cafeflow.cafe.dto.TrafficDto;
+import org.example.cafeflow.cafe.service.CafeService;
 import org.example.cafeflow.seat.domain.SeatStatus;
 import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.example.cafeflow.seat.service.SeatService;
@@ -21,6 +23,7 @@ import static org.example.cafeflow.seat.domain.SeatStatus.RESERVED;
 @RequiredArgsConstructor
 public class SeatWebsocketController {
     private final SeatService seatService;
+    private final CafeService cafeService;
     //WebSocket
     @MessageMapping("/cafe/{cafeId}/seat") //  -> /app/cafe/1/seat
     @SendTo("/topic/cafe/{cafeId}/seat")
@@ -28,4 +31,11 @@ public class SeatWebsocketController {
         seatService.setTimeSeatStatus(cafeId, seatStatusDto);
         return seatStatusDto;
     }
+
+//    @MessageMapping("/cafe/{cafeId}/seat") //  -> /app/cafe/1/seat
+//    @SendTo("/topic/cafe")
+//    public TrafficDto trafficSend(@DestinationVariable("cafeId") Long cafeId, TrafficDto trafficDto) {
+//        seatService.setTimeSeatStatus(cafeId, seatStatusDto);
+//        return seatStatusDto;
+//    }
 }

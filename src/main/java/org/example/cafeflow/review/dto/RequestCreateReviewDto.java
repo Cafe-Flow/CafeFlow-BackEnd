@@ -6,15 +6,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.example.cafeflow.review.domain.Review;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class RequestCreateReviewDto {
 
     @Builder
-    public RequestCreateReviewDto(Long rating, String comment, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public RequestCreateReviewDto(Long rating, String comment, byte[] image, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.rating = rating;
         this.comment = comment;
     }
@@ -24,11 +26,20 @@ public class RequestCreateReviewDto {
 
     private String comment;
 
+    private MultipartFile image;
+
     public Review toEntity(RequestCreateReviewDto reviewDto) {
         LocalDateTime time = LocalDateTime.now();
+        byte[] imageBytes = null;
+        try {
+            imageBytes = image != null ? image.getBytes() : null;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
+        }
         return Review.builder()
                 .rating(reviewDto.getRating())
                 .comment(reviewDto.getComment())
+                .image(imageBytes)
                 .createdAt(time)
                 .updatedAt(time)
                 .build();

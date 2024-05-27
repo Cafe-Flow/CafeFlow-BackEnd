@@ -67,6 +67,7 @@ public class ReviewService {
                         .id(r.getId())
                         .rating(r.getRating())
                         .comment(r.getComment())
+                        .image(r.getImage())
                         .createdAt(r.getCreatedAt())
                         .updatedAt(r.getUpdatedAt())
                         .build())

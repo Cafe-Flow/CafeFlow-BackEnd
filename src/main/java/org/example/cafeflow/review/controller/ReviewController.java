@@ -18,7 +18,7 @@ public class ReviewController {
 
     //카페 리뷰 등록
     @PostMapping("/api/cafe/{cafe_id}/review")
-    public Long postReview(@PathVariable("cafe_id") Long cafeId, @Valid @RequestBody RequestCreateReviewDto reviewDto) {
+    public Long postReview(@PathVariable("cafe_id") Long cafeId, @Valid @ModelAttribute RequestCreateReviewDto reviewDto) {
         Long reviewId = reviewService.createReview(cafeId, reviewDto);
         return reviewId;
     }

@@ -1,6 +1,8 @@
 package org.example.cafeflow.cafe.dto;
 
 import lombok.*;
+import org.example.cafeflow.cafe.domain.Traffic;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -16,9 +18,11 @@ public class ResponseCafeDto {
     private int reviewCount;
     private double reviewsRating;
     private String description;
-    private int mapx;
-    private int mapy;
+    private Integer mapx;
+    private Integer mapy;
+    private byte[] image;
     private Integer watingTime;
+    private Traffic traffic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

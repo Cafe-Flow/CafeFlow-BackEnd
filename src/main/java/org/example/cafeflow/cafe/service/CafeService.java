@@ -10,6 +10,7 @@ import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -68,11 +69,18 @@ public class CafeService {
     public void updateCafe(Long id, RequestCafeDto cafeDto) {
         Cafe cafe = cafeRepository.findById(id);
         LocalDateTime updatedAt = LocalDateTime.now();
+        byte[] imageBytes = null;
+        try {
+            imageBytes = cafeDto.getImage() != null ? cafeDto.getImage().getBytes() : null;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
+        }
         cafe.updateCafe(cafeDto.getName(),
                         cafeDto.getAddress(),
                         cafeDto.getDescription(),
                         cafeDto.getMapx(),
                         cafeDto.getMapy(),
+                        imageBytes,
                         updatedAt
         );
     }
@@ -109,6 +117,7 @@ public class CafeService {
                 .description(cafe.getDescription())
                 .mapy(cafe.getMapy())
                 .mapy(cafe.getMapy())
+                .image(cafe.getImage())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();

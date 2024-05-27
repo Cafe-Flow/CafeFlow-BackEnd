@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 public class Review {
 
     @Builder
-    public Review(Long id, Cafe cafe, Member member, Long rating, String comment, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Review(Long id, Cafe cafe, Member member, Long rating, String comment, byte[] image, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.cafe = cafe;
         this.member = member;
         this.rating = rating;
         this.comment = comment;
+        this.image = image;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -40,6 +41,10 @@ public class Review {
     private Long rating;
 
     private String comment;
+
+    @Lob
+    @Column(name = "image", columnDefinition="LONGBLOB",nullable = true)
+    private byte[] image;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
