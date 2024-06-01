@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.seat.domain.UseSeat;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UseSeatRepository {
@@ -17,10 +19,19 @@ public class UseSeatRepository {
         return em.find(UseSeat.class, id);
     }
 
-    public UseSeat findBySeatNumber(int seatNumber) {
-        return em.createQuery("select u from UseSeat u where u.seatNumber = :seatNumber", UseSeat.class)
+    public UseSeat findBySeatNumber(Long cafeId, int seatNumber) {
+        return em.createQuery("select u from UseSeat u where u.cafe.id = :cafeId and u.seatNumber = :seatNumber", UseSeat.class)
+                .setParameter("cafeId", cafeId)
                 .setParameter("seatNumber", seatNumber)
                 .getSingleResult();
+    }
+
+    public int findUsingSeatNumber(Long cafeId) {
+        List<UseSeat> useSeats = em.createQuery("select u from UseSeat u where u.cafe.id = :cafeId", UseSeat.class)
+                .setParameter("cafeId", cafeId)
+                .getResultList();
+        return useSeats.size();
+
     }
 
     public void delete(Long id) {
@@ -28,4 +39,5 @@ public class UseSeatRepository {
         if(seat != null)
             em.remove(seat);
     }
+
 }

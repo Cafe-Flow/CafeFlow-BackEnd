@@ -13,10 +13,11 @@ import java.time.LocalDateTime;
 public class Review {
 
     @Builder
-    public Review(Long id, Cafe cafe, Member member, Long rating, String comment, byte[] image, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Review(Long id, Cafe cafe, Member member, String nickname, Long rating, String comment, byte[] image, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.cafe = cafe;
         this.member = member;
+        this.nickname = nickname;
         this.rating = rating;
         this.comment = comment;
         this.image = image;
@@ -38,6 +39,8 @@ public class Review {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String nickname;
+
     private Long rating;
 
     private String comment;
@@ -54,8 +57,14 @@ public class Review {
 
 
 
+
     public void registerdReviewToCafe(Cafe cafe) {
         this.cafe = cafe;
         cafe.addReview(this);
+    }
+
+    public void registerReviewToMember(Member member) {
+        this.member = member;
+
     }
 }

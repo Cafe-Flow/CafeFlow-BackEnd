@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
 import org.example.cafeflow.seat.domain.UseSeat;
@@ -20,7 +21,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, Integer mapx, Integer mapy, byte[] image, Integer watingTime, Traffic traffic, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, Integer accumulationUse, Integer accumulationTime, String description, Integer mapx, Integer mapy, byte[] image, Integer watingTime, Traffic traffic, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -29,11 +30,13 @@ public class Cafe {
         this.seats = seats;
         this.reviewsRating = reviewsRating;
         this.reviewsCount = reviewsCount;
+        this.accumulationUse = (accumulationUse == null) ? 0 : accumulationUse;
+        this.accumulationTime = (accumulationTime == null) ? 0 : accumulationTime;
         this.description = description;
         this.mapx = mapx;
         this.mapy = mapy;
         this.image = image;
-        this.watingTime = watingTime;
+        this.watingTime = (watingTime == null) ? 0 : watingTime;
         this.traffic = (traffic == null) ? Traffic.GREEN : traffic;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -65,6 +68,12 @@ public class Cafe {
     private double reviewsRating;
 
     private int reviewsCount;
+
+    @Column(name = "accumulation_use")
+    private Integer accumulationUse;
+
+    @Column(name = "accumulation_time")
+    private Integer accumulationTime;
 
     private String description;
     private Integer mapx;
@@ -119,5 +128,21 @@ public class Cafe {
 
     public void removeAllSeat() {
         seats.clear();
+    }
+
+    public void updateTraffic(Traffic traffic) {
+        this.traffic = traffic;
+    }
+
+    public void upAccumulationUseCount() {
+        this.accumulationUse++;
+    }
+
+    public void updateWatingTime(Integer watingTime) {
+        this.watingTime = watingTime;
+    }
+
+    public void updateAccumulationTime(Integer accumulationTime) {
+        this.accumulationTime += accumulationTime;
     }
 }

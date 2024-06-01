@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.cafe.domain.Cafe;
+import org.example.cafeflow.cafe.domain.Traffic;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
+import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
+import org.example.cafeflow.seat.dto.SeatStatusDto;
+import org.example.cafeflow.seat.repository.SeatRepository;
+import org.example.cafeflow.seat.repository.UseSeatRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
 public class CafeService {
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+    private final UseSeatRepository useSeatRepository;
+    private final SeatRepository seatRepository;
 
     public Long join(RequestCafeDto cafeDto, Long userId) {
         Cafe cafe = cafeDto.toEntity();
@@ -118,8 +125,46 @@ public class CafeService {
                 .mapy(cafe.getMapy())
                 .mapy(cafe.getMapy())
                 .image(cafe.getImage())
+                .watingTime(cafe.getWatingTime())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();
     }
+
+    public void updateCafeTraffic(Long cafeId, TrafficDto trafficDto) {
+        Cafe cafe = cafeRepository.findById(cafeId);
+        cafe.updateTraffic(trafficDto.getTraffic());
+    }
+
+    public Traffic trafficIsUpdate(Long cafeId) {
+        int useSeatSize = useSeatRepository.findUsingSeatNumber(cafeId);
+        int fullSeatSize = seatRepository.findFullSeatNumber(cafeId);
+
+        //cafe의 Traffic이 변한다면 true 반환
+        double occupancyRatio = (double) useSeatSize / fullSeatSize * 100; //비율
+
+        Cafe cafe = cafeRepository.findById(cafeId);
+        Traffic oldTraffic = cafe.getTraffic();
+
+
+        Traffic newTraffic;
+        if (occupancyRatio <= 30) {
+            newTraffic = Traffic.GREEN;
+        } else if (occupancyRatio <= 70) {
+            newTraffic = Traffic.YELLOW;
+        } else {
+            newTraffic = Traffic.RED;
+        }
+        cafe.updateTraffic(newTraffic);
+        boolean isTrafficUpdated = oldTraffic != newTraffic;
+
+        if (isTrafficUpdated)
+            return newTraffic;
+        else
+            return null;
+
+
+
+    }
+
 }

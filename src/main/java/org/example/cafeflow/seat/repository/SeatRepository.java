@@ -40,4 +40,11 @@ public class SeatRepository {
                 .setParameter("seat_number", seatNumber)
                 .getSingleResult();
     }
+
+    public int findFullSeatNumber(Long cafeId) {
+        List<Seat> seats = em.createQuery("select s from Seat s where s.cafe.id = :cafe_id", Seat.class)
+                .setParameter("cafe_id", cafeId)
+                .getResultList();
+        return seats.size();
+    }
 }

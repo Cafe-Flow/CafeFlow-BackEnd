@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.review.domain.Review;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ public class RequestCreateReviewDto {
 
     private MultipartFile image;
 
-    public Review toEntity(RequestCreateReviewDto reviewDto) {
+    public Review toEntity(RequestCreateReviewDto reviewDto, String nickname) {
         LocalDateTime time = LocalDateTime.now();
         byte[] imageBytes = null;
         try {
@@ -37,6 +38,7 @@ public class RequestCreateReviewDto {
             throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
         }
         return Review.builder()
+                .nickname(nickname)
                 .rating(reviewDto.getRating())
                 .comment(reviewDto.getComment())
                 .image(imageBytes)

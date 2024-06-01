@@ -1,6 +1,8 @@
 package org.example.cafeflow.review.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.cafe.domain.Cafe;
 import org.example.cafeflow.cafe.repository.CafeRepository;
 import org.example.cafeflow.review.domain.Review;
@@ -21,15 +23,20 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final CafeRepository cafeRepository;
+    private final MemberRepository memberRepository;
 
-    public Long createReview(Long cafeId, RequestCreateReviewDto reviewDto) {
-        Review review = reviewDto.toEntity(reviewDto); //리뷰 생성
+    public Long createReview(Long cafeId, RequestCreateReviewDto reviewDto, Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Review review = reviewDto.toEntity(reviewDto, member.getNickname()); //리뷰 생성
 
         Cafe cafe = cafeRepository.findById(cafeId); //생성한 리뷰 카페랑 묶기
         cafe.upReviewCount();//리뷰 수 증가
 
         Long totalRating = 0L; // 총 평점
         review.registerdReviewToCafe(cafe);
+        review.registerReviewToMember(member);
         reviewRepository.save(review);
 
         List<Review> reviews = reviewRepository.findByCafeId(cafeId);
@@ -65,6 +72,7 @@ public class ReviewService {
         return reviews.stream()
                 .map(r -> ResponseReviewDto.builder()
                         .id(r.getId())
+                        .nickname(r.getNickname())
                         .rating(r.getRating())
                         .comment(r.getComment())
                         .image(r.getImage())
