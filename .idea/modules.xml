@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CafeFlow.main.iml" filepath="$PROJECT_DIR$/.idea/modules/CafeFlow.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.example.CafeFlow.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.example.CafeFlow.main.iml" />
     </modules>
   </component>
 </project>
