@@ -37,6 +37,9 @@ public class SeatController {
         return seatDtoList;
     }
 
-
-
+    //좌석 확인(사용자용)
+    @GetMapping("/api/cafe/{cafe_id}/real-time-seat")
+    public List<ResponseSeatDto> realTimeCafeSeats(@PathVariable("cafe_id") Long cafeId) {
+        return seatService.cafeSeats(cafeId);
+    }
 }
