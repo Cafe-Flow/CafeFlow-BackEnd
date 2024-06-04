@@ -45,9 +45,17 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    public void updateReadStatus(Long messageId) {
-        ChatMessage message = chatMessageRepository.findById(messageId).orElseThrow(() -> new IllegalArgumentException("Message not found"));
-        message.setReadStatus(true);
-        chatMessageRepository.save(message);
+    public List<ChatMessageDto> getUnreadMessages(Long roomId) {
+        return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(roomId)
+                .stream()
+                .filter(msg -> !msg.isReadStatus())
+                .map(msg -> new ChatMessageDto(msg.getSender().getId(), msg.getReceiver().getId(), msg.getChatRoom().getId(), msg.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    public void updateReadStatus(List<Long> messageIds) {
+        List<ChatMessage> messages = chatMessageRepository.findAllById(messageIds);
+        messages.forEach(message -> message.setReadStatus(true));
+        chatMessageRepository.saveAll(messages);
     }
 }

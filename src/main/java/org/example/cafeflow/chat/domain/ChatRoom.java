@@ -1,8 +1,12 @@
 package org.example.cafeflow.chat.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.cafeflow.Member.domain.Member;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -10,6 +14,7 @@ import org.example.cafeflow.Member.domain.Member;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
