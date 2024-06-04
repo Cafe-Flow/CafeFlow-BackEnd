@@ -27,4 +27,7 @@ public class ChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private Member user;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatMessage> messages = new HashSet<>();
 }
