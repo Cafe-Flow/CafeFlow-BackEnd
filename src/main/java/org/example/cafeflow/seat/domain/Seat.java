@@ -48,4 +48,8 @@ public class Seat {
         this.cafe = cafe;
         cafe.addSeat(this);
     }
+
+    public void changeSeatStatus(SeatStatus seatStatus) {
+        this.seatStatus = seatStatus;
+    }
 }

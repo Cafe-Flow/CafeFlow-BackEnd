@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.cafe.domain.Cafe;
+import org.example.cafeflow.cafe.domain.Traffic;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
+import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
+import org.example.cafeflow.seat.dto.SeatStatusDto;
+import org.example.cafeflow.seat.repository.SeatRepository;
+import org.example.cafeflow.seat.repository.UseSeatRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +27,8 @@ import java.util.stream.Collectors;
 public class CafeService {
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+    private final UseSeatRepository useSeatRepository;
+    private final SeatRepository seatRepository;
 
     public Long join(RequestCafeDto cafeDto, Long userId) {
         Cafe cafe = cafeDto.toEntity();
@@ -57,6 +65,7 @@ public class CafeService {
                         .reviewCount(c.getReviewsCount())
                         .mapx(c.getMapx())
                         .mapy(c.getMapy())
+                        .watingTime(c.getWatingTime())
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -67,11 +76,18 @@ public class CafeService {
     public void updateCafe(Long id, RequestCafeDto cafeDto) {
         Cafe cafe = cafeRepository.findById(id);
         LocalDateTime updatedAt = LocalDateTime.now();
+        byte[] imageBytes = null;
+        try {
+            imageBytes = cafeDto.getImage() != null ? cafeDto.getImage().getBytes() : null;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
+        }
         cafe.updateCafe(cafeDto.getName(),
                         cafeDto.getAddress(),
                         cafeDto.getDescription(),
                         cafeDto.getMapx(),
                         cafeDto.getMapy(),
+                        imageBytes,
                         updatedAt
         );
     }
@@ -108,8 +124,47 @@ public class CafeService {
                 .description(cafe.getDescription())
                 .mapy(cafe.getMapy())
                 .mapy(cafe.getMapy())
+                .image(cafe.getImage())
+                .watingTime(cafe.getWatingTime())
                 .createdAt(cafe.getCreatedAt())
                 .updatedAt(cafe.getUpdatedAt())
                 .build();
     }
+
+    public void updateCafeTraffic(Long cafeId, TrafficDto trafficDto) {
+        Cafe cafe = cafeRepository.findById(cafeId);
+        cafe.updateTraffic(trafficDto.getTraffic());
+    }
+
+    public Traffic trafficIsUpdate(Long cafeId) {
+        int useSeatSize = useSeatRepository.findUsingSeatNumber(cafeId);
+        int fullSeatSize = seatRepository.findFullSeatNumber(cafeId);
+
+        //cafe의 Traffic이 변한다면 true 반환
+        double occupancyRatio = (double) useSeatSize / fullSeatSize * 100; //비율
+
+        Cafe cafe = cafeRepository.findById(cafeId);
+        Traffic oldTraffic = cafe.getTraffic();
+
+
+        Traffic newTraffic;
+        if (occupancyRatio <= 30) {
+            newTraffic = Traffic.GREEN;
+        } else if (occupancyRatio <= 70) {
+            newTraffic = Traffic.YELLOW;
+        } else {
+            newTraffic = Traffic.RED;
+        }
+        cafe.updateTraffic(newTraffic);
+        boolean isTrafficUpdated = oldTraffic != newTraffic;
+
+        if (isTrafficUpdated)
+            return newTraffic;
+        else
+            return null;
+
+
+
+    }
+
 }

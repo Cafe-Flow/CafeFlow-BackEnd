@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
+import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
+import org.example.cafeflow.seat.domain.UseSeat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, String description, int mapx, int mapy, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, Integer accumulationUse, Integer accumulationTime, String description, Integer mapx, Integer mapy, byte[] image, Integer watingTime, Traffic traffic, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -28,9 +30,14 @@ public class Cafe {
         this.seats = seats;
         this.reviewsRating = reviewsRating;
         this.reviewsCount = reviewsCount;
+        this.accumulationUse = (accumulationUse == null) ? 0 : accumulationUse;
+        this.accumulationTime = (accumulationTime == null) ? 0 : accumulationTime;
         this.description = description;
         this.mapx = mapx;
         this.mapy = mapy;
+        this.image = image;
+        this.watingTime = (watingTime == null) ? 0 : watingTime;
+        this.traffic = (traffic == null) ? Traffic.GREEN : traffic;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -54,14 +61,33 @@ public class Cafe {
     @OneToMany(mappedBy = "cafe", cascade = CascadeType.REMOVE)
     private List<Seat> seats = new ArrayList<>();
 
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.REMOVE)
+    private List<UseSeat> useSeats = new ArrayList<>();
+
     @Column(name = "reviews_rating")
     private double reviewsRating;
 
     private int reviewsCount;
 
+    @Column(name = "accumulation_use")
+    private Integer accumulationUse;
+
+    @Column(name = "accumulation_time")
+    private Integer accumulationTime;
+
     private String description;
-    private int mapx;
-    private int mapy;
+    private Integer mapx;
+    private Integer mapy;
+
+    @Lob
+    @Column(name = "image", columnDefinition="LONGBLOB",nullable = true)
+    private byte[] image;
+
+    @Column(name = "wating_time")
+    private Integer watingTime;
+
+    @Enumerated(EnumType.STRING)
+    private Traffic traffic;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -69,13 +95,15 @@ public class Cafe {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
     //카페 정보 수정
-    public void updateCafe(String name, String address, String description, int mapx, int mapy, LocalDateTime updatedAt) {
+    public void updateCafe(String name, String address, String description, Integer mapx, Integer mapy, byte[] image, LocalDateTime updatedAt) {
         this.name = name;
         this.address = address;
         this.description = description;
         this.mapx = mapx;
         this.mapy = mapy;
+        this.image = image;
         this.updatedAt = updatedAt;
     }
 
@@ -100,5 +128,21 @@ public class Cafe {
 
     public void removeAllSeat() {
         seats.clear();
+    }
+
+    public void updateTraffic(Traffic traffic) {
+        this.traffic = traffic;
+    }
+
+    public void upAccumulationUseCount() {
+        this.accumulationUse++;
+    }
+
+    public void updateWatingTime(Integer watingTime) {
+        this.watingTime = watingTime;
+    }
+
+    public void updateAccumulationTime(Integer accumulationTime) {
+        this.accumulationTime += accumulationTime;
     }
 }
