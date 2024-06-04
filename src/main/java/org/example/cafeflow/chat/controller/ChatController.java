@@ -1,6 +1,7 @@
 package org.example.cafeflow.chat.controller;
 
 import org.example.cafeflow.chat.dto.ChatMessageDto;
+import org.example.cafeflow.chat.dto.ReadMessagesRequestDto;
 import org.example.cafeflow.chat.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -26,8 +27,13 @@ public class ChatController {
         return chatService.getChatHistory(roomId);
     }
 
-    @PostMapping("/chat/read/{messageId}")
-    public void markMessageAsRead(@PathVariable("messageId") Long messageId) {
-        chatService.updateReadStatus(messageId);
+    @PostMapping("/chat/read")
+    public void markMessagesAsRead(@RequestBody ReadMessagesRequestDto request) {
+        chatService.updateReadStatus(request.getMessageIds());
+    }
+
+    @GetMapping("/chat/unread-messages/{roomId}")
+    public List<ChatMessageDto> getUnreadMessages(@PathVariable("roomId") Long roomId) {
+        return chatService.getUnreadMessages(roomId);
     }
 }
