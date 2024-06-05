@@ -43,4 +43,28 @@ public class BeverageController {
     public CafeBeverageDto addCafeBeverage(@RequestBody CafeBeverageDto cafeBeverageDto) {
         return beverageService.addCafeBeverage(cafeBeverageDto);
     }
+
+    @PutMapping("/basic/{id}")
+    public BasicBeverageDto updateBasicBeverage(
+            @PathVariable("id") Long id,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+        return beverageService.updateBasicBeverage(id, name, description, image);
+    }
+
+    @DeleteMapping("/basic/{id}")
+    public void deleteBasicBeverage(@PathVariable("id") Long id) {
+        beverageService.deleteBasicBeverage(id);
+    }
+
+    @PutMapping("/cafe/{id}")
+    public CafeBeverageDto updateCafeBeverage(@PathVariable("id") Long id, @RequestBody CafeBeverageDto cafeBeverageDto) {
+        return beverageService.updateCafeBeverage(id, cafeBeverageDto);
+    }
+
+    @DeleteMapping("/cafe/{id}")
+    public void deleteCafeBeverage(@PathVariable("id") Long id) {
+        beverageService.deleteCafeBeverage(id);
+    }
 }

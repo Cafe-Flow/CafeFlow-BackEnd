@@ -92,4 +92,49 @@ public class BeverageService {
                 cafeBeverage.getPrice()
         );
     }
+
+    public BasicBeverageDto updateBasicBeverage(Long id, String name, String description, MultipartFile image) throws IOException {
+        BasicBeverage basicBeverage = basicBeverageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Basic Beverage not found"));
+        basicBeverage.setName(name);
+        basicBeverage.setDescription(description);
+        if (image != null) {
+            basicBeverage.setImage(image.getBytes());
+        }
+        basicBeverage = basicBeverageRepository.save(basicBeverage);
+        return new BasicBeverageDto(
+                basicBeverage.getId(),
+                basicBeverage.getName(),
+                basicBeverage.getDescription(),
+                basicBeverage.getImage());
+    }
+
+    public void deleteBasicBeverage(Long id) {
+        basicBeverageRepository.deleteById(id);
+    }
+
+    public CafeBeverageDto updateCafeBeverage(Long id, CafeBeverageDto cafeBeverageDto) {
+        CafeBeverage cafeBeverage = cafeBeverageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cafe Beverage not found"));
+        BasicBeverage basicBeverage = basicBeverageRepository.findById(cafeBeverageDto.getBasicBeverageId())
+                .orElseThrow(() -> new IllegalArgumentException("Basic Beverage not found"));
+        Cafe cafe = cafeRepository.findById(cafeBeverageDto.getCafeId());
+        if (cafe == null) {
+            throw new IllegalArgumentException("Cafe not found");
+        }
+        cafeBeverage.setBasicBeverage(basicBeverage);
+        cafeBeverage.setCafe(cafe);
+        cafeBeverage.setPrice(cafeBeverageDto.getPrice());
+        cafeBeverage = cafeBeverageRepository.save(cafeBeverage);
+        return new CafeBeverageDto(
+                cafeBeverage.getId(),
+                cafeBeverage.getBasicBeverage().getId(),
+                cafeBeverage.getBasicBeverage().getName(),
+                cafeBeverage.getCafe().getId(),
+                cafeBeverage.getPrice());
+    }
+
+    public void deleteCafeBeverage(Long id) {
+        cafeBeverageRepository.deleteById(id);
+    }
 }
