@@ -49,7 +49,7 @@ public class BeverageController {
             @PathVariable("id") Long id,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
-            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+            @RequestParam("image") MultipartFile image) throws IOException {
         return beverageService.updateBasicBeverage(id, name, description, image);
     }
 

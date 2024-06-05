@@ -54,19 +54,6 @@ public class BeverageService {
                 .collect(Collectors.toList());
     }
 
-    public BasicBeverageDto addBasicBeverage(String name, String description, MultipartFile image) throws IOException {
-        BasicBeverage basicBeverage = BasicBeverage.builder()
-                .name(name)
-                .description(description)
-                .image(image.getBytes())
-                .build();
-        basicBeverage = basicBeverageRepository.save(basicBeverage);
-        return new BasicBeverageDto(
-                basicBeverage.getId(),
-                basicBeverage.getName(),
-                basicBeverage.getDescription(),
-                basicBeverage.getImage());
-    }
 
     public CafeBeverageDto addCafeBeverage(CafeBeverageDto cafeBeverageDto) {
         BasicBeverage basicBeverage = basicBeverageRepository.findById(cafeBeverageDto.getBasicBeverageId())
@@ -91,6 +78,20 @@ public class BeverageService {
                 cafeBeverage.getCafe().getId(),
                 cafeBeverage.getPrice()
         );
+    }
+
+    public BasicBeverageDto addBasicBeverage(String name, String description, MultipartFile image) throws IOException {
+        BasicBeverage basicBeverage = BasicBeverage.builder()
+                .name(name)
+                .description(description)
+                .image(image.getBytes())
+                .build();
+        basicBeverage = basicBeverageRepository.save(basicBeverage);
+        return new BasicBeverageDto(
+                basicBeverage.getId(),
+                basicBeverage.getName(),
+                basicBeverage.getDescription(),
+                basicBeverage.getImage());
     }
 
     public BasicBeverageDto updateBasicBeverage(Long id, String name, String description, MultipartFile image) throws IOException {
