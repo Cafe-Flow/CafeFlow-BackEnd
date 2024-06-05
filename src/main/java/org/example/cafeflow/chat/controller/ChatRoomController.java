@@ -6,6 +6,8 @@ import org.example.cafeflow.chat.service.ChatRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/chat/rooms")
 public class ChatRoomController {
@@ -25,5 +27,17 @@ public class ChatRoomController {
     @GetMapping("/{roomId}")
     public ChatRoomDto getRoom(@PathVariable("roomId") Long roomId) {
         return chatRoomService.getRoom(roomId);
+    }
+
+
+
+    @GetMapping("/cafeOwner/{cafeOwnerId}")
+    public List<ChatRoomDto> getRoomsByCafeOwnerId(@PathVariable("cafeOwnerId") Long cafeOwnerId) {
+        return chatRoomService.getRoomsByCafeOwnerId(cafeOwnerId);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<ChatRoomDto> getRoomsByUserId(@PathVariable("userId") Long userId) {
+        return chatRoomService.getRoomsByUserId(userId);
     }
 }

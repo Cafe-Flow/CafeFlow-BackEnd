@@ -9,6 +9,9 @@ import org.example.cafeflow.chat.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -38,6 +41,18 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
         return convertToDto(chatRoom);
+    }
+
+    public List<ChatRoomDto> getRoomsByCafeOwnerId(Long cafeOwnerId) {
+        return chatRoomRepository.findByCafeOwnerId(cafeOwnerId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ChatRoomDto> getRoomsByUserId(Long userId) {
+        return chatRoomRepository.findByUserId(userId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     private ChatRoomDto convertToDto(ChatRoom chatRoom) {

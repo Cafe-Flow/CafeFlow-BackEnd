@@ -4,6 +4,7 @@ import org.example.cafeflow.Member.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                     .requestMatchers("/api/auth/register", "/api/auth/login", "/api/**", "/ws/**")
                     .permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/beverages/**").permitAll()
                     .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults());
 
