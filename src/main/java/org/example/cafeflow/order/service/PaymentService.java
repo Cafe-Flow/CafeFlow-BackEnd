@@ -29,10 +29,19 @@ public class PaymentService {
     // 아임포트 액세스 토큰 발급
     public String getImportToken() {
         String url = "https://api.iamport.kr/users/getToken";
-        String body = gson.toJson(new GetTokenRequest(impKey, impSecret));
+        GetTokenRequest getTokenRequest = new GetTokenRequest(impKey, impSecret);
 
-        String response = restTemplate.postForObject(url, body, String.class);
-        GetTokenResponse tokenResponse = gson.fromJson(response, GetTokenResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<String> entity = new HttpEntity<>(gson.toJson(getTokenRequest), headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        GetTokenResponse tokenResponse = gson.fromJson(response.getBody(), GetTokenResponse.class);
+
+        if (tokenResponse.getResponse() == null) {
+            throw new RuntimeException("Failed to get access token from Iamport");
+        }
+
         return tokenResponse.getResponse().getAccess_token();
     }
 

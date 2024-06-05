@@ -12,7 +12,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/verify")
-    public PaymentResponse verifyPayment(@RequestParam String impUid) {
+    public PaymentResponse verifyPayment(@RequestParam("impUid") String impUid) {
         return paymentService.verifyPayment(impUid);
     }
 }
