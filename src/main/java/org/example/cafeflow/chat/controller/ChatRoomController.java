@@ -1,6 +1,6 @@
 package org.example.cafeflow.chat.controller;
 
-import org.example.cafeflow.chat.domain.ChatRoom;
+import org.example.cafeflow.chat.dto.ChatRoomDto;
 import org.example.cafeflow.chat.dto.ChatRoomRequest;
 import org.example.cafeflow.chat.service.ChatRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ public class ChatRoomController {
     private ChatRoomService chatRoomService;
 
     @PostMapping
-    public ChatRoom createRoom(@RequestBody ChatRoomRequest request) {
+    public ChatRoomDto createRoom(@RequestBody ChatRoomRequest request) {
         return chatRoomService.createRoom(request.getCafeOwnerId(), request.getUserId());
     }
 
@@ -23,7 +23,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/{roomId}")
-    public ChatRoom getRoom(@PathVariable("roomId") Long roomId) {
+    public ChatRoomDto getRoom(@PathVariable("roomId") Long roomId) {
         return chatRoomService.getRoom(roomId);
     }
 }
