@@ -7,6 +7,7 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+
   security:
     user:
       name: admin
@@ -17,11 +18,6 @@ spring:
     url: jdbc:mariadb://kit.clqqii6k21l4.ap-northeast-2.rds.amazonaws.com:3306/cafe-flow
     username: admin
     password: dhfpswl0923
-  ssh:
-    remote_jump_host: 3.39.150.38
-    user: ubuntu
-    private_key: "C:\\workspace\\downloads\\keys\\my-ec2-keypair.pem"
-    database_port: 3306
 
   jpa:
     hibernate:
@@ -39,3 +35,8 @@ app:
   jwt:
     secret: "afee9ff139300837761676667d913ed901b7d6a7119053311e1b2e63fd47a48e"
     expiration: 86400000
+
+
+iamport:
+  api-key: "7655673661637031"
+  api-secret: "9e0qf4EneZXs0MIX7LQbJvytgSoC445Lzcpylz8yRsjziNZZmYFk8reUL4H3bZdHgha7o71ndecmO5Vt"
