@@ -81,7 +81,7 @@ public class SeatService {
             String available = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd:HH:mm"));
             int timeDifferenceInMinutes = 0;
 
-            // "일:시:분" 형태의 문자열을 분리하여 각각의 값을 가져옵니다.
+            // "일:시:분" 형태의 문자열을 분리
             String[] occupiedParts = occupied.split(":");
             String[] availableParts = available.split(":");
 
@@ -91,12 +91,12 @@ public class SeatService {
             int availableHour = Integer.parseInt(availableParts[1]);
             int availableMinute = Integer.parseInt(availableParts[2]);
 
-            // 날짜가 다르면 24시간을 더해줍니다.
+            // 날짜가 다르면 24시간을 더하기
             if (!occupiedParts[0].equals(availableParts[0])) {
                 timeDifferenceInMinutes += 24 * 60;
             }
 
-            // 시간 차이를 분 단위로 계산하여 더해줍니다.
+            // 시간 차이를 분 단위로 계산
             timeDifferenceInMinutes += (availableHour - occupiedHour) * 60;
             timeDifferenceInMinutes += (availableMinute - occupiedMinute);
 
