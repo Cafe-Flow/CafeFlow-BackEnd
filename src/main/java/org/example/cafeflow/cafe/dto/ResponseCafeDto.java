@@ -1,6 +1,7 @@
 package org.example.cafeflow.cafe.dto;
 
 import lombok.*;
+import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.cafe.domain.Traffic;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 public class ResponseCafeDto {
 
     private Long id;
+    private Long memberId;
     private String name;
     private String address;
     private int reviewCount;

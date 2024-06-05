@@ -98,7 +98,7 @@ public class CafeController {
 
     //카페 정보 수정
     @PutMapping("/api/cafe/{cafe_id}")
-    public void updateCafe(@PathVariable("cafe_id") Long cafeId, @RequestBody RequestCafeDto cafeDto) {
+    public void updateCafe(@PathVariable("cafe_id") Long cafeId, @ModelAttribute RequestCafeDto cafeDto) {
         cafeService.updateCafe(cafeId, cafeDto);
     }
 
