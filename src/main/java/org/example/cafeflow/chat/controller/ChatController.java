@@ -5,21 +5,24 @@ import org.example.cafeflow.chat.dto.ReadMessagesRequestDto;
 import org.example.cafeflow.chat.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class ChatController {
+
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @MessageMapping("/chat/send")
-    @SendTo("/topic/messages")
-    public ChatMessageDto send(ChatMessageDto chatMessageDto) {
+    public void send(ChatMessageDto chatMessageDto) {
         chatService.saveMessage(chatMessageDto);
-        return chatMessageDto;
+        messagingTemplate.convertAndSend("/topic/messages/" + chatMessageDto.getChatRoomId(), chatMessageDto);
     }
 
     @GetMapping("/chat/history/{roomId}")
