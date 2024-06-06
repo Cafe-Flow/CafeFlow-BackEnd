@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/chat/rooms")
@@ -29,8 +30,6 @@ public class ChatRoomController {
         return chatRoomService.getRoom(roomId);
     }
 
-
-
     @GetMapping("/cafeOwner/{cafeOwnerId}")
     public List<ChatRoomDto> getRoomsByCafeOwnerId(@PathVariable("cafeOwnerId") Long cafeOwnerId) {
         return chatRoomService.getRoomsByCafeOwnerId(cafeOwnerId);
@@ -40,4 +39,5 @@ public class ChatRoomController {
     public List<ChatRoomDto> getRoomsByUserId(@PathVariable("userId") Long userId) {
         return chatRoomService.getRoomsByUserId(userId);
     }
+
 }
