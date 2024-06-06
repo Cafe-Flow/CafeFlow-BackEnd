@@ -8,7 +8,7 @@ import org.example.cafeflow.order.domain.OrderItem;
 import org.example.cafeflow.order.domain.OrderStatus;
 import org.example.cafeflow.order.dto.OrderDto;
 import org.example.cafeflow.order.dto.PaymentResponse;
-import org.example.cafeflow.order.repository.CafeBeverageRepository;
+import org.example.cafeflow.order.repository.CafeMenuRepository;
 import org.example.cafeflow.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
-    private final CafeBeverageRepository cafeBeverageRepository;
+    private final CafeMenuRepository cafeMenuRepository;
     private final PaymentService paymentService;
 
     public Orders createOrder(OrderDto orderDto, String impUid) {
@@ -37,10 +37,10 @@ public class OrderService {
 
             List<OrderItem> orderItems = orderDto.getOrderItems().stream()
                     .map(itemDto -> {
-                        var cafeBeverage = cafeBeverageRepository.findById(itemDto.getCafeBeverageId())
-                                .orElseThrow(() -> new IllegalArgumentException("Cafe beverage not found"));
+                        var cafeMenu = cafeMenuRepository.findById(itemDto.getCafeMenuId())
+                                .orElseThrow(() -> new IllegalArgumentException("Cafe menu not found"));
                         return OrderItem.builder()
-                                .cafeBeverage(cafeBeverage)
+                                .cafeMenu(cafeMenu)
                                 .quantity(itemDto.getQuantity())
                                 .price(itemDto.getPrice())
                                 .build();

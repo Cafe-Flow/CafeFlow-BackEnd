@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +25,12 @@ public class ChatRoomService {
                 .orElseThrow(() -> new IllegalArgumentException("Cafe owner not found"));
         Member user = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 기존의 채팅방이 있는지 확인
+        Optional<ChatRoom> existingChatRoom = chatRoomRepository.findByCafeOwnerIdAndUserId(cafeOwnerId, userId);
+        if (existingChatRoom.isPresent()) {
+            return convertToDto(existingChatRoom.get());
+        }
 
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setCafeOwner(cafeOwner);

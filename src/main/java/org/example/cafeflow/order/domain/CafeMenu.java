@@ -10,14 +10,14 @@ import org.example.cafeflow.cafe.domain.Cafe;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CafeBeverage {
+public class CafeMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "basic_beverage_id", nullable = false)
-    private BasicBeverage basicBeverage;
+    @JoinColumn(name = "basic_menu_id", nullable = false)
+    private BasicMenu basicMenu;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cafe_id", nullable = false)

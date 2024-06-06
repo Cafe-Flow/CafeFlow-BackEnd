@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CafeBeverageDto {
+public class CafeMenuDto {
     private Long id;
-    private Long basicBeverageId;
-    private String basicBeverageName;
+    private Long basicMenuId;
+    private String basicMenuName;
     private Long cafeId;
     private Double price;
 }
