@@ -37,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                     .requestMatchers("/api/auth/register", "/api/auth/login", "/api/**", "/ws/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/beverages/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/menus/**").permitAll()
                     .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults());
 

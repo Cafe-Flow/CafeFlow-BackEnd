@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BasicBeverage {
+public class BasicMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,9 +18,9 @@ public class BasicBeverage {
     private String name;
 
     @Column(nullable = false)
-    private String description;
+    private String type; // Coffee, Decaf, Latte, Tea, Smoothie, Juice, Ade, Cake, Dessert, Beverage 등
 
     @Lob
-    @Column(nullable = true)
+    @Column(name = "image", columnDefinition="LONGBLOB")
     private byte[] image;
 }
