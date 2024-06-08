@@ -31,12 +31,12 @@ public class ChatController {
     }
 
     @PostMapping("/chat/read")
-    public void markMessagesAsRead(@RequestBody ReadMessagesRequestDto request) {
-        chatService.updateReadStatus(request.getMessageIds());
+    public void markMessagesAsRead(@RequestBody ReadMessagesRequestDto request, @RequestParam("userId") Long userId) {
+        chatService.updateReadStatus(request.getMessageIds(), userId);
     }
 
     @GetMapping("/chat/unread-messages/{roomId}")
-    public List<ChatMessageDto> getUnreadMessages(@PathVariable("roomId") Long roomId) {
-        return chatService.getUnreadMessages(roomId);
+    public List<ChatMessageDto> getUnreadMessages(@PathVariable("roomId") Long roomId, @RequestParam("userId") Long userId) {
+        return chatService.getUnreadMessages(roomId, userId);
     }
 }

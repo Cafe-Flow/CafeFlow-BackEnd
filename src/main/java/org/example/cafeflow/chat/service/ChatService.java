@@ -34,28 +34,36 @@ public class ChatService {
         chatMessage.setChatRoom(chatRoom);
         chatMessage.setContent(chatMessageDto.getContent());
         chatMessage.setTimestamp(LocalDateTime.now());
-        chatMessage.setReadStatus(false);
+        chatMessage.setSenderReadStatus(true);
+        chatMessage.setReceiverReadStatus(false);
         chatMessageRepository.save(chatMessage);
     }
 
     public List<ChatMessageDto> getChatHistory(Long roomId) {
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(roomId)
                 .stream()
-                .map(msg -> new ChatMessageDto(msg.getSender().getId(), msg.getReceiver().getId(), msg.getChatRoom().getId(), msg.getContent()))
+                .map(msg -> new ChatMessageDto(msg.getId(), msg.getSender().getId(), msg.getReceiver().getId(), msg.getChatRoom().getId(), msg.getContent(), msg.isSenderReadStatus(), msg.isReceiverReadStatus()))
                 .collect(Collectors.toList());
     }
 
-    public List<ChatMessageDto> getUnreadMessages(Long roomId) {
+    public List<ChatMessageDto> getUnreadMessages(Long roomId, Long userId) {
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(roomId)
                 .stream()
-                .filter(msg -> !msg.isReadStatus())
-                .map(msg -> new ChatMessageDto(msg.getSender().getId(), msg.getReceiver().getId(), msg.getChatRoom().getId(), msg.getContent()))
+                .filter(msg -> (msg.getReceiver().getId().equals(userId) && !msg.isReceiverReadStatus()) || (msg.getSender().getId().equals(userId) && !msg.isSenderReadStatus()))
+                .map(msg -> new ChatMessageDto(msg.getId(), msg.getSender().getId(), msg.getReceiver().getId(), msg.getChatRoom().getId(), msg.getContent(), msg.isSenderReadStatus(), msg.isReceiverReadStatus()))
                 .collect(Collectors.toList());
     }
 
-    public void updateReadStatus(List<Long> messageIds) {
+    public void updateReadStatus(List<Long> messageIds, Long userId) {
         List<ChatMessage> messages = chatMessageRepository.findAllById(messageIds);
-        messages.forEach(message -> message.setReadStatus(true));
+        messages.forEach(message -> {
+            if (message.getReceiver().getId().equals(userId)) {
+                message.setReceiverReadStatus(true);
+            }
+            if (message.getSender().getId().equals(userId)) {
+                message.setSenderReadStatus(true);
+            }
+        });
         chatMessageRepository.saveAll(messages);
     }
 }
