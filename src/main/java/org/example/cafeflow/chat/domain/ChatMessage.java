@@ -29,7 +29,9 @@ public class ChatMessage {
     private ChatRoom chatRoom;
 
     private String content;
-    private boolean readStatus;
+
+    private boolean senderReadStatus;
+    private boolean receiverReadStatus;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
