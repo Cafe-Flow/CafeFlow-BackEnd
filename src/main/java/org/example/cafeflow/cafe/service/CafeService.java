@@ -87,10 +87,7 @@ public class CafeService {
             throw new RuntimeException("이미지 변환 중 오류가 발생했습니다.", e);
         }
         cafe.updateCafe(cafeDto.getName(),
-                        cafeDto.getAddress(),
                         cafeDto.getDescription(),
-                        cafeDto.getMapx(),
-                        cafeDto.getMapy(),
                         imageBytes,
                         updatedAt
         );
@@ -173,4 +170,26 @@ public class CafeService {
 
     }
 
+    public List<ResponseCafeDto> findMyCafes(Long user_id) {
+        List<Cafe> cafes = cafeRepository.findMyCafes(user_id);
+        return cafes.stream()
+                .map(c -> ResponseCafeDto.builder()
+                        .id(c.getId())
+                        .name(c.getName())
+                        .address(c.getAddress())
+                        .memberId(c.getMember().getId())
+                        .reviewCount(c.getReviewsCount())
+                        .reviewsRating(c.getReviewsRating())
+                        .description(c.getDescription())
+                        .mapx(c.getMapx())
+                        .mapy(c.getMapy())
+                        .image(c.getImage())
+                        .watingTime(c.getWatingTime())
+                        .traffic(c.getTraffic())
+                        .createdAt(c.getCreatedAt())
+                        .updatedAt(c.getUpdatedAt())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 }

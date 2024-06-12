@@ -102,11 +102,19 @@ public class CafeController {
         cafeService.updateCafe(cafeId, cafeDto);
     }
 
-
     //카페 정보 삭제
     @DeleteMapping("/api/cafe/{cafe_id}")
     public void deleteCafe(@PathVariable("cafe_id") Long cafeId) {
         cafeService.deleteCafe(cafeId);
     }
 
+    //내 카페 정보 확인
+    @GetMapping("/api/cafe/me")
+    public List<ResponseCafeDto> cafeInfoMine(HttpServletRequest request) {
+        UserPrincipal currentUser = getCurrentUser(request);
+        return cafeService.findMyCafes(currentUser.getId());
+    }
+
+
+    //카페 프로모션
 }

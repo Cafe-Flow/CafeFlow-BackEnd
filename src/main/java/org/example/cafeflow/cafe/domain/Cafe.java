@@ -95,14 +95,10 @@ public class Cafe {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
     //카페 정보 수정
-    public void updateCafe(String name, String address, String description, Integer mapx, Integer mapy, byte[] image, LocalDateTime updatedAt) {
+    public void updateCafe(String name, String description, byte[] image, LocalDateTime updatedAt) {
         this.name = name;
-        this.address = address;
         this.description = description;
-        this.mapx = mapx;
-        this.mapy = mapy;
         this.image = image;
         this.updatedAt = updatedAt;
     }

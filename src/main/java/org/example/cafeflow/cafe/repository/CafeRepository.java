@@ -34,7 +34,6 @@ public class CafeRepository {
        return cafes.stream()
                 .map(c -> c.getId())
                 .collect(Collectors.toList());
-
     }
 
     public List<Cafe> findAll() {
@@ -58,6 +57,14 @@ public class CafeRepository {
     public List<Cafe> findAllByReviewsRating() {
         return em.createQuery("select c from Cafe c order by c.reviewsRating desc", Cafe.class)
                 .getResultList();
+    }
+
+    //내 소유 카페목록 확인
+    public List<Cafe> findMyCafes(Long userId) {
+        List<Cafe> cafes = em.createQuery("select c from Cafe c where c.member.id = :id", Cafe.class)
+                .setParameter("id", userId)
+                .getResultList();
+        return cafes;
     }
 
     public void delete(Long id) {

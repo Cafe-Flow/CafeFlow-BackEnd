@@ -2,6 +2,7 @@ package org.example.cafeflow.seat.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.cafeflow.cafe.domain.Traffic;
+import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.service.CafeService;
 import org.example.cafeflow.seat.domain.SeatStatus;
@@ -32,6 +33,7 @@ public class SeatWebsocketController {
     @MessageMapping("/cafe/{cafeId}/seat") //  -> /app/cafe/1/seat
     @SendTo("/topic/cafe/{cafeId}/seat")
     public SeatStatusDto seatStatus(@DestinationVariable("cafeId") Long cafeId, SeatStatusDto seatStatusDto) {
+        ResponseCafeDto cafeDto = cafeService.findByIdForCafeInfo(cafeId);
         seatService.setTimeSeatStatus(cafeId, seatStatusDto);
 
         //카페 트래픽에 변화가 생기면 바꾼 후 trafficDto객체 생성하여 trafficSend함수 호출
@@ -40,6 +42,7 @@ public class SeatWebsocketController {
             trafficSend(TrafficDto.builder()
                     .cafeId(cafeId)
                     .traffic(traffic)
+                    .watingTime(cafeDto.getWatingTime())
                     .build()
             );
         }
