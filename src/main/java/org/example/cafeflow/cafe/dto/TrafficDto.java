@@ -8,10 +8,12 @@ import org.example.cafeflow.cafe.domain.Traffic;
 public class TrafficDto {
     private Long cafeId;
     private Traffic traffic;
+    private Integer watingTime;
 
     @Builder
-    public TrafficDto(Long cafeId, Traffic traffic) {
+    public TrafficDto(Long cafeId, Traffic traffic, Integer watingTime) {
         this.cafeId = cafeId;
         this.traffic = traffic;
+        this.watingTime = watingTime;
     }
 }

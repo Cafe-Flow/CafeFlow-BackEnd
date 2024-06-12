@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
 public class RequestCreateReviewDto {
 
     @Builder
-    public RequestCreateReviewDto(Long rating, String comment, byte[] image, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public RequestCreateReviewDto(Long rating, String comment, MultipartFile image) {
         this.rating = rating;
         this.comment = comment;
+        this.image = image;
     }
 
     @Min(value = 1, message = "별점을 매겨주세요!")
