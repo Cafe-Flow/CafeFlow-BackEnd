@@ -9,7 +9,7 @@ import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
 import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.repository.CafeRepository;
-import org.example.cafeflow.seat.dto.SeatStatusDto;
+import org.example.cafeflow.promotion.dto.ResponsePromotionDto;
 import org.example.cafeflow.seat.repository.SeatRepository;
 import org.example.cafeflow.seat.repository.UseSeatRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

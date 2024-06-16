@@ -26,6 +26,7 @@ public class RequestCafeDto {
     private MultipartFile image;
 
 
+
     @Builder
     public RequestCafeDto(String name,
                           String address,

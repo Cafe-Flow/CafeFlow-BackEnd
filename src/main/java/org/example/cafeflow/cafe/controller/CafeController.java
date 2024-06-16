@@ -8,17 +8,10 @@ import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.Member.repository.MemberRepository;
 import org.example.cafeflow.Member.util.JwtTokenProvider;
 import org.example.cafeflow.Member.util.UserPrincipal;
-import org.example.cafeflow.cafe.domain.Traffic;
 import org.example.cafeflow.cafe.dto.RequestCafeDto;
 import org.example.cafeflow.cafe.dto.ResponseCafeDto;
-import org.example.cafeflow.cafe.dto.TrafficDto;
 import org.example.cafeflow.cafe.service.CafeService;
-import org.example.cafeflow.seat.dto.SeatStatusDto;
 import org.springframework.http.*;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -74,7 +67,6 @@ public class CafeController {
 
         log.info("uri : {}", uri);
         RestTemplate restTemplate = new RestTemplate();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", "_ezXdGwXAqGvflG7Tvta");
         headers.set("X-Naver-Client-Secret", "m0nzDklPPy");
