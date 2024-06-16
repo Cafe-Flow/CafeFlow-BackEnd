@@ -69,6 +69,7 @@ public class CafeService {
                         .mapy(c.getMapy())
                         .watingTime(c.getWatingTime())
                         .traffic(c.getTraffic())
+                        .image(c.getImage())
                         .build()
                 )
                 .collect(Collectors.toList());
