@@ -1,11 +1,11 @@
 package org.example.cafeflow.cafe.dto;
 
 import lombok.*;
-import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.cafe.domain.Traffic;
-import org.springframework.web.multipart.MultipartFile;
+import org.example.cafeflow.promotion.dto.ResponsePromotionDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,4 +27,5 @@ public class ResponseCafeDto {
     private Traffic traffic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<ResponsePromotionDto> promotions;
 }

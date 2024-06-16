@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.cafeflow.Member.domain.Member;
 import org.example.cafeflow.cafe.dto.TrafficDto;
+import org.example.cafeflow.promotion.domain.Promotion;
 import org.example.cafeflow.review.domain.Review;
 import org.example.cafeflow.seat.domain.Seat;
 import org.example.cafeflow.seat.domain.UseSeat;
@@ -21,7 +22,7 @@ import java.util.List;
 public class Cafe {
 
     @Builder
-    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, Integer accumulationUse, Integer accumulationTime, String description, Integer mapx, Integer mapy, byte[] image, Integer watingTime, Traffic traffic, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Cafe(Long id, String name, String address, Member member, List<Review> reviews, List<Seat> seats, double reviewsRating, int reviewsCount, Integer accumulationUse, Integer accumulationTime, String description, Integer mapx, Integer mapy, byte[] image, Integer watingTime, Traffic traffic, LocalDateTime createdAt, LocalDateTime updatedAt, List<Promotion> promotions) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -40,6 +41,7 @@ public class Cafe {
         this.traffic = (traffic == null) ? Traffic.GREEN : traffic;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.promotions = promotions;
     }
 
     @Id
@@ -95,6 +97,14 @@ public class Cafe {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.REMOVE)
+    private List<Promotion> promotions = new ArrayList<>();
+
+    public void addPromotion(Promotion promotion) {
+        promotions.add(promotion);
+        promotion.setCafe(this);
+    }
+
     //카페 정보 수정
     public void updateCafe(String name, String description, byte[] image, LocalDateTime updatedAt) {
         this.name = name;
@@ -141,4 +151,5 @@ public class Cafe {
     public void updateAccumulationTime(Integer accumulationTime) {
         this.accumulationTime += accumulationTime;
     }
+
 }
