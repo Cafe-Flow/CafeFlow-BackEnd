@@ -13,6 +13,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -27,15 +28,32 @@ public class SeatStatusSimulation {
     private StompSession stompSession;
     private final SeatService seatService; // SeatService를 주입받음
 
-    private static final Map<Long, Set<Integer>> CAFE_SEATS = Map.of(
-            21L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-            22L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9),
-            23L, Set.of(1, 2, 3, 4, 5, 6, 7)
-    );
+    private static final Map<Long, Set<Integer>> CAFE_SEATS;
+
+    static {
+        Map<Long, Set<Integer>> cafeSeats = new HashMap<>();
+        cafeSeats.put(2L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        cafeSeats.put(3L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        cafeSeats.put(5L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+        cafeSeats.put(6L, Set.of(1, 2, 3, 4, 5, 6, 7, 8));
+        cafeSeats.put(7L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+        cafeSeats.put(8L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
+        cafeSeats.put(9L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        cafeSeats.put(10L, Set.of(1, 2, 3, 4, 5));
+        cafeSeats.put(11L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        cafeSeats.put(12L, Set.of(1, 2));
+        cafeSeats.put(13L, Set.of(1, 2, 3, 4, 5, 6));
+        cafeSeats.put(14L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19));
+        cafeSeats.put(15L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        cafeSeats.put(16L, Set.of(1, 2, 3));
+        cafeSeats.put(17L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
+        cafeSeats.put(18L, Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+        CAFE_SEATS = Map.copyOf(cafeSeats);
+    }
 
     private final Random random = new Random();
 
-    @Scheduled(fixedRate = 5000) // 5초마다 실행
+    @Scheduled(fixedRate = 5000)
     public void simulateSeatStatus() throws ExecutionException, InterruptedException {
         if (stompSession == null || !stompSession.isConnected()) {
             connectWebSocket();
@@ -59,6 +77,6 @@ public class SeatStatusSimulation {
     private void connectWebSocket() throws ExecutionException, InterruptedException {
         SockJsClient sockJsClient = new SockJsClient(List.of(new WebSocketTransport(new StandardWebSocketClient())));
         stompClient.setMessageConverter(new org.springframework.messaging.converter.MappingJackson2MessageConverter());
-        stompSession = stompClient.connect("ws://localhost:8080/ws", new StompSessionHandlerAdapter() {}).get();
+        stompSession = stompClient.connect("ws://cafeflow.store:8080/ws", new StompSessionHandlerAdapter() {}).get();
     }
 }
