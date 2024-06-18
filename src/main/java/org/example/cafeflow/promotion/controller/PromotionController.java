@@ -65,6 +65,4 @@ public class PromotionController {
         UserPrincipal currentUser = getCurrentUser(request);
         promotionService.deletePromotion(currentUser.getId(), pId);
     }
-
-
 }
