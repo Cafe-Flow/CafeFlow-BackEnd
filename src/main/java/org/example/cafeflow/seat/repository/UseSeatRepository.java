@@ -19,12 +19,13 @@ public class UseSeatRepository {
         return em.find(UseSeat.class, id);
     }
 
-    public UseSeat findBySeatNumber(Long cafeId, int seatNumber) {
+    public List<UseSeat> findBySeatNumber(Long cafeId, int seatNumber) {
         return em.createQuery("select u from UseSeat u where u.cafe.id = :cafeId and u.seatNumber = :seatNumber", UseSeat.class)
                 .setParameter("cafeId", cafeId)
                 .setParameter("seatNumber", seatNumber)
-                .getSingleResult();
+                .getResultList();
     }
+
 
     public int findUsingSeatNumber(Long cafeId) {
         List<UseSeat> useSeats = em.createQuery("select u from UseSeat u where u.cafe.id = :cafeId", UseSeat.class)
