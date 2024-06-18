@@ -13,6 +13,7 @@ public class ResponsePromotionDto {
     private Long id;
     private Long memberId;
     private Long cafeId;
+    private String cafeName;
     private LocalDateTime createdAt;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
